@@ -101,7 +101,8 @@ uumean=0.;vvmean=0.;wwmean=0.
 uvmean=0.;uwmean=0.;vwmean=0.
 phimean=0.;phiphimean=0.
 utmean=0.;vtmean=0.
-dudy=0.
+dudy=0.;uuvmean=0.;vvvmean=0.                                            !Budget
+vwwmean=0.                                                               !Budget
 
 t1 = MPI_WTIME()
 
@@ -234,7 +235,7 @@ do itime=ifirst,ilast
 
    if(itime.gt.100000)then
    call STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-        uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy)
+        uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean)    !Budget
    endif
 
    if (mod(itime,isave)==0) call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&

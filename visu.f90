@@ -155,7 +155,7 @@ end subroutine VISU_INSTA
 !############################################################################
 !
 subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy)        !Budget
+     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean)        !Budget
 !
 !############################################################################
 
@@ -168,7 +168,7 @@ implicit none
 
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                   dudy                                      !Budget
+                                                   dudy,uuvmean,vvvmean,vwwmean      !Budget
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2
@@ -228,6 +228,21 @@ ta1(:,:,:)=uy1(:,:,:)*uz1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
 vwmean(:,:,:)=vwmean(:,:,:)+tmean(:,:,:)
 
+!uuvmean=ux1*ux1*uy1
+ta1(:,:,:)=ux1(:,:,:)*ux1(:,:,:)*uy1(:,:,:)   !Budget
+call fine_to_coarseS(1,ta1,tmean)             !Budget
+uuvmean(:,:,:)=uuvmean(:,:,:)+tmean(:,:,:)    !Budget  
+
+!vvvmean=uy1*uy1*uy1
+ta1(:,:,:)=uy1(:,:,:)*uy1(:,:,:)*uy1(:,:,:)   !Budget
+call fine_to_coarseS(1,ta1,tmean)             !Budget
+vvvmean(:,:,:)=vvvmean(:,:,:)+tmean(:,:,:)    !Budget 
+ 
+!vwwmean=uz1*uz1*uz1
+ta1(:,:,:)=uz1(:,:,:)*uz1(:,:,:)*uz1(:,:,:)   !Budget
+call fine_to_coarseS(1,ta1,tmean)             !Budget
+vwwmean(:,:,:)=vwwmean(:,:,:)+tmean(:,:,:)    !Budget
+ 
 !utmean=ux1*phi1
 ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
@@ -262,6 +277,9 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,utmean,'utmean.dat',1)
    call decomp_2d_write_one(1,vtmean,'vtmean.dat',1)
    call decomp_2d_write_one(1,dudy,'dudy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,uuvmean,'uuvmean.dat',1)             !Budget
+   call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
+   call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
    if (iscalar==1) then
@@ -330,3 +348,27 @@ call decomp_2d_write_one(1,uvisu,filename,2)
 !           1,tb1,filename)
 
 end subroutine VISU_PRE
+
+!############################################################################
+!
+subroutine BUDGET ()
+!
+!############################################################################
+
+USE param
+USE variables
+USE decomp_2d
+USE decomp_2d_io
+
+implicit none
+
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
+real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: 
+
+
+
+
+
+
+
+
