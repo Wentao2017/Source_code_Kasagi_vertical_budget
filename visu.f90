@@ -155,7 +155,8 @@ end subroutine VISU_INSTA
 !############################################################################
 !
 subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean)        !Budget
+     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean,&
+     uiuiv,duiuivdy)                  !Budget
 !
 !############################################################################
 
@@ -168,7 +169,7 @@ implicit none
 
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                   dudy,uuvmean,vvvmean,vwwmean      !Budget
+                                                   dudy,uuvmean,vvvmean,vwwmean,uiuiv,duiuivdy      !Budget
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2
@@ -237,12 +238,12 @@ uuvmean(:,:,:)=uuvmean(:,:,:)+tmean(:,:,:)    !Budget
 ta1(:,:,:)=uy1(:,:,:)*uy1(:,:,:)*uy1(:,:,:)   !Budget
 call fine_to_coarseS(1,ta1,tmean)             !Budget
 vvvmean(:,:,:)=vvvmean(:,:,:)+tmean(:,:,:)    !Budget 
- 
+
 !vwwmean=uz1*uz1*uz1
 ta1(:,:,:)=uz1(:,:,:)*uz1(:,:,:)*uz1(:,:,:)   !Budget
 call fine_to_coarseS(1,ta1,tmean)             !Budget
 vwwmean(:,:,:)=vwwmean(:,:,:)+tmean(:,:,:)    !Budget
- 
+
 !utmean=ux1*phi1
 ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
@@ -252,6 +253,20 @@ utmean(:,:,:)=utmean(:,:,:)+tmean(:,:,:)
 ta1(:,:,:)=uy1(:,:,:)*phi1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
 vtmean(:,:,:)=vtmean(:,:,:)+tmean(:,:,:)
+
+!uiuiv=uuv+vvv+vww=(uuvmean-uumean*vmean-2*uvmean*umean)+(vvvmean-3*vmean*vvmean)+(vwwmean-vmean*wwmean-2*wmean*vwmean)
+ta1(:,:,:)=uuvmean(:,:,:)-uumean(:,:,:)*vmean(:,:,:)-2*uvmean(:,:,:)*umean(:,:,:)+ &            !Budget
+           vvvmean(:,:,:)-3*vmean(:,:,:)*vvmean(:,:,:)+ &                                       !Budget
+           vwwmean(:,:,:)-vmean(:,:,:)*wwmean(:,:,:)-2*wmean(:,:,:)*vwmean(:,:,:)               !Budget 
+call fine_to_coarseS(1,ta1,tmean)                                                               !Budget 
+uiuiv(:,:,:)=tmean(:,:,:)                                                                       !Budget
+
+!duiuivdy
+call transpose_x_to_y(uiuiv,ta2)                                                     !Budget
+call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call transpose_y_to_x(tb2,td1)                                                       !Budget
+call fine_to_coarseS(1,td1,tmean)                                                    !Budget
+duiuivdy(:,:,:)=tmean(:,:,:)                                                         !Budget
 
 if (iscalar==1) then
    !phiphimean=phi1*phi1
@@ -280,6 +295,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,uuvmean,'uuvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
+   call decomp_2d_write_one(1,duiuivdy,'duiuivdy.dat',1)           !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
    if (iscalar==1) then
@@ -351,20 +367,29 @@ end subroutine VISU_PRE
 
 !############################################################################
 !
-subroutine BUDGET ()
+!subroutine BUDGET ()
 !
 !############################################################################
 
-USE param
-USE variables
-USE decomp_2d
-USE decomp_2d_io
+!USE param
+!USE variables
+!USE decomp_2d
+!USE decomp_2d_io
 
-implicit none
+!implicit none
 
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
-real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: 
+!real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
+!real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: uuv,uuvmean,vvv,vvvmean,vww,vwwmean 
 
+!integer :: iperiod,ijk,nvect1,nvect2,nvect3,i,j,k
+
+!iperiod=ilast-ifirst
+!nvect1=xsize(1)*xsize(2)*xsize(3)
+
+!Average in time
+!uuv(:,:,:)=uuvmean(:,:,:)/iperiod
+!vvv(:,:,:)=vvvmean(:,:,:)/iperiod
+!vww(:,:,:)=vwwmean(:,:,:)/iperiod 
 
 
 

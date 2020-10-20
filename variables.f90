@@ -48,7 +48,7 @@ real(mytype), save, allocatable, dimension(:,:,:) :: ep1
 
 !arrays for statistic collection
 real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                     dudy,uuvmean,vvvmean,vwwmean                 !Budget
+                                                     dudy,uuvmean,vvvmean,vwwmean,uiuiv,duiuivdy                 !Budget
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -148,6 +148,8 @@ contains
     allocate (uuvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
     allocate (vvvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
     allocate (vwwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
+    allocate (uiuiv(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))     !Budget
+    allocate (duiuivdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))  !Budget
 
  
     if (iscalar==1) then

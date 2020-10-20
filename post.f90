@@ -15,7 +15,7 @@ integer :: nxyz,count,itime1,itime2,itime3
 
 
 real(8),dimension(nx1,ny1,nz1) :: umean1,vmean1,wmean1,phimean1,uumean1,vvmean1,wwmean1,phiphimean1
-real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,dudy1
+real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,dudy1,duiuivdy1
 real(4),dimension(ny1) :: yp,ypi
 !real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
@@ -198,6 +198,21 @@ OPEN(11,FILE='dudy.dat',FORM='UNFORMATTED',&
      !print *,k,'UZUZ',uvmean1(nx1/2,ny1/2,k)!/itime
   ENDDO
   CLOSE(11)
+
+OPEN(11,FILE='duiuivdy.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) duiuivdy1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',uvmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
   print *,'READ DATA DONE 1'
 
 umean1=umean1/itime1
@@ -212,6 +227,7 @@ utmean1=utmean1/itime1
 vtmean1=vtmean1/itime1
 uvmean1=uvmean1/itime1
 dudy1=dudy1/itime1
+duiuivdy1=duiuivdy1/itime1
 
 !DO AN AVERAGE IN X AND Z
 
@@ -233,6 +249,8 @@ do j=1,ny1
       q_stat(j,10)=q_stat(j,10)+vtmean1(i,j,k)
       q_stat(j,11)=q_stat(j,11)+uvmean1(i,j,k)
       q_stat(j,12)=q_stat(j,12)+dudy1(i,j,k)
+      q_stat(j,13)=q_stat(j,13)+duiuivdy1(i,j,k)
+      
    enddo
    enddo
 !   print *,j,umean1(nx1/2,j,nz1/2)
@@ -270,6 +288,7 @@ do j=1,ny1
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,12)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,13)=-0.5*q_stat(j,13)*xnu/(u_to*u_to*u_to*u_to)                    !Turbulent diffusion
 enddo
 
 100 format(2F12.6,2F12.6,2F12.6,2F12.6,2F12.6,2F12.6,3x,2F12.6,3x,2F12.6)
@@ -287,7 +306,7 @@ enddo
 
   open (144,file='Aiding_flow_budget.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) yp(j),yp(j)*xl2,q_stat(j,12)
+      write(144,100) yp(j),yp(j)*xl2,q_stat(j,12),q_stat(j,13)
    enddo
    close(144)
 
@@ -323,6 +342,7 @@ do j=1,ny1
       q_stat(j,10)=q_stat(j,10)+vtmean1(i,j,k)
       q_stat(j,11)=q_stat(j,11)+uvmean1(i,j,k)
       q_stat(j,12)=q_stat(j,12)+dudy1(i,j,k)
+      q_stat(j,13)=q_stat(j,13)+duiuivdy1(i,j,k)
    enddo
    enddo
 !   print *,j,umean1(nx1/2,j,nz1/2)
@@ -340,6 +360,7 @@ do j=1,ny1
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,12)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,13)=-0.5*q_stat(j,13)*xnu/(u_to*u_to*u_to*u_to)                    !Turbulent diffusion
 enddo
 
   open (144,file='Opposing_flow.dat',form='formatted',status='unknown')
@@ -355,7 +376,7 @@ enddo
 
   open (144,file='Opposing_flow_budget.dat',form='formatted',status='unknown')
   do j=ny1,ny1/2+1,-1
-      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,12)
+      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,12),q_stat(j,13)
    enddo
    close(144)
    
