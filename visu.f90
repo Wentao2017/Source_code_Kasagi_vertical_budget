@@ -156,7 +156,7 @@ end subroutine VISU_INSTA
 !
 subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
      uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean,&
-     uiuiv,duiuivdy)                  !Budget
+     uiuiv,duiuivdy,k,d2kdy2,nxmsize,nymsize,nzmsize,phG,ph2,ph3,pp3)                  !Budget
 !
 !############################################################################
 
@@ -167,12 +167,25 @@ USE decomp_2d_io
 
 implicit none
 
+integer :: nxmsize,nymsize,nzmsize                                                   !Budget
+TYPE(DECOMP_INFO) :: phG,ph2,ph3                                                     !Budget  
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                   dudy,uuvmean,vvvmean,vwwmean,uiuiv,duiuivdy      !Budget
-real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1
-real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2
+                                                   dudy,uuvmean,vvvmean,vwwmean,uiuiv,duiuivdy,k,d2kdy2      !Budget
+real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean               !Budget
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1                       !Budget
+real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2                  !Budget
+
+real(mytype),dimension(ph3%zst(1):ph3%zen(1),ph3%zst(2):ph3%zen(2),nzmsize) :: pp3         !Budget
+!Z PENCILS NXM NYM NZM-->NXM NYM NZ                                                        !Budget 
+real(mytype),dimension(ph3%zst(1):ph3%zen(1),ph3%zst(2):ph3%zen(2),zsize(3)) :: tc3,dip3   !Budget
+!Y PENCILS NXM NYM NZ -->NXM NY NZ                                                         !Budget 
+real(mytype),dimension(ph3%yst(1):ph3%yen(1),nymsize,ysize(3)) :: td2                      !Budget
+real(mytype),dimension(ph3%yst(1):ph3%yen(1),ysize(2),ysize(3)) :: te2,dip2                !Budget
+!X PENCILS NXM NY NZ  -->NX NY NZ                                                          !Budget  
+real(mytype),dimension(nxmsize,xsize(2),xsize(3)) :: ti1                                   !Budget   
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: tj1,tk1,dip1                         !Budget 
+
 
 !umean=ux1
 call fine_to_coarseS(1,ux1,tmean)
@@ -192,6 +205,23 @@ vmean(:,:,:)=vmean(:,:,:)+tmean(:,:,:)
 !wmean=uz1
 call fine_to_coarseS(1,uz1,tmean)
 wmean(:,:,:)=wmean(:,:,:)+tmean(:,:,:)
+
+!pmean=tj1                                                                           !Budget 
+!WORK Z-PENCILS                                                                      !Budget
+call interiz6(tc3,pp3,dip3,sz,cifip6z,cisip6z,ciwip6z,cifz6,cisz6,ciwz6,&            !Budget
+     (ph3%zen(1)-ph3%zst(1)+1),(ph3%zen(2)-ph3%zst(2)+1),nzmsize,zsize(3),1)         !Budget
+!WORK Y-PENCILS                                                                      !Budget
+call transpose_z_to_y(tc3,td2,ph3) !nxm nym nz                                       !Budget
+call interiy6(te2,td2,dip2,sy,cifip6y,cisip6y,ciwip6y,cify6,cisy6,ciwy6,&            !Budget
+     (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)                          !Budget
+!WORK X-PENCILS                                                                      !Budget
+call transpose_y_to_x(te2,ti1,ph2) !nxm ny nz                                        !Budget
+call interi6(tj1,ti1,dip1,sx,cifip6,cisip6,ciwip6,cifx6,cisx6,ciwx6,&                !Budget     
+     nxmsize,xsize(1),xsize(2),xsize(3),1)                                           !Budget
+!The pressure field on the main mesh is in tj1                                       !Budget
+!PRESSURE                                                                            !Budget
+call fine_to_coarseS(1,tj1,tmean)                                                    !Budget
+pmean(:,:,:)=pmean(:,:,:)+tmean(:,:,:)                                               !Budget
 
 if (iscalar==1) then
    !phimean=phi1
@@ -268,6 +298,19 @@ call transpose_y_to_x(tb2,td1)                                                  
 call fine_to_coarseS(1,td1,tmean)                                                    !Budget
 duiuivdy(:,:,:)=tmean(:,:,:)                                                         !Budget
 
+!k                                                                                   !Budget
+ta1(:,:,:)=0.5*(uumean(:,:,:)+vvmean(:,:,:)+wwmean(:,:,:))                           !Budget
+call fine_to_coarseS(1,ta1,tmean)                                                    !Budget 
+k(:,:,:)=tmean(:,:,:)                                                                !Budget
+
+!d2kdy2                                                                              !Budget
+call transpose_x_to_y(k,ta2)                                                         !Budget  
+call deryy(tb2,ta2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)               !Budget
+call transpose_y_to_x(tb2,td1)                                                       !Budget
+call fine_to_coarseS(1,td1,tmean)                                                    !Budget
+d2kdy2(:,:,:)=tmean(:,:,:)                                                           !Budget 
+
+
 if (iscalar==1) then
    !phiphimean=phi1*phi1
    ta1(:,:,:)=phi1(:,:,:)*phi1(:,:,:)
@@ -296,6 +339,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
    call decomp_2d_write_one(1,duiuivdy,'duiuivdy.dat',1)           !Budget
+   call decomp_2d_write_one(1,d2kdy2,'d2kdy2.dat',1)               !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
    if (iscalar==1) then
