@@ -19,8 +19,8 @@
 0      #nclz   # nclz (BC)
 2      #itype  # Type of flow  
 1      #iin    # Inflow condition (1: classic, 2: turbinit)
-1700000      #ifirst # First iteration   
-1900000      #ilast  # Last iteration 
+1900000      #ifirst # First iteration   
+2100000      #ilast  # Last iteration 
 1      #nscheme# Temporal scheme (1:AB2, 2: RK3, 3:RK4, 4:AB3)
 2      #istret # y mesh refinement (0:no, 1:center, 2:both sides, 3:bottom)
 0.259065151  #beta   # Refinement parameter (beta) 

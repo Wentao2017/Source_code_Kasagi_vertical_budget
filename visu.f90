@@ -156,7 +156,7 @@ end subroutine VISU_INSTA
 !
 subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
      uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean,&
-     uiuiv,duiuivdy,k,d2kdy2,nxmsize,nymsize,nzmsize,phG,ph2,ph3,pp3)                  !Budget
+     pmean,pvmean,nxmsize,nymsize,nzmsize,phG,ph2,ph3,pp3)                  !Budget
 !
 !############################################################################
 
@@ -171,7 +171,7 @@ integer :: nxmsize,nymsize,nzmsize                                              
 TYPE(DECOMP_INFO) :: phG,ph2,ph3                                                     !Budget  
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                   dudy,uuvmean,vvvmean,vwwmean,uiuiv,duiuivdy,k,d2kdy2      !Budget
+                                                   dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean      !Budget
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean               !Budget
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1                       !Budget
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2                  !Budget
@@ -222,6 +222,11 @@ call interi6(tj1,ti1,dip1,sx,cifip6,cisip6,ciwip6,cifx6,cisx6,ciwx6,&           
 !PRESSURE                                                                            !Budget
 call fine_to_coarseS(1,tj1,tmean)                                                    !Budget
 pmean(:,:,:)=pmean(:,:,:)+tmean(:,:,:)                                               !Budget
+
+!pvmean=tj1*uy1                                                                      !Budget
+ta1(:,:,:)=tj1(:,:,:)*uy1(:,:,:)                                                     !Budget                
+call fine_to_coarseS(1,ta1,tmean)                                                    !Budget
+pvmean(:,:,:)=pvmean(:,:,:)+tmean(:,:,:)                                             !Budget
 
 if (iscalar==1) then
    !phimean=phi1
@@ -284,33 +289,6 @@ ta1(:,:,:)=uy1(:,:,:)*phi1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
 vtmean(:,:,:)=vtmean(:,:,:)+tmean(:,:,:)
 
-!uiuiv=uuv+vvv+vww=(uuvmean-uumean*vmean-2*uvmean*umean)+(vvvmean-3*vmean*vvmean)+(vwwmean-vmean*wwmean-2*wmean*vwmean)
-ta1(:,:,:)=uuvmean(:,:,:)-uumean(:,:,:)*vmean(:,:,:)-2*uvmean(:,:,:)*umean(:,:,:)+ &            !Budget
-           vvvmean(:,:,:)-3*vmean(:,:,:)*vvmean(:,:,:)+ &                                       !Budget
-           vwwmean(:,:,:)-vmean(:,:,:)*wwmean(:,:,:)-2*wmean(:,:,:)*vwmean(:,:,:)               !Budget 
-call fine_to_coarseS(1,ta1,tmean)                                                               !Budget 
-uiuiv(:,:,:)=tmean(:,:,:)                                                                       !Budget
-
-!duiuivdy
-call transpose_x_to_y(uiuiv,ta2)                                                     !Budget
-call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
-call transpose_y_to_x(tb2,td1)                                                       !Budget
-call fine_to_coarseS(1,td1,tmean)                                                    !Budget
-duiuivdy(:,:,:)=tmean(:,:,:)                                                         !Budget
-
-!k                                                                                   !Budget
-ta1(:,:,:)=0.5*(uumean(:,:,:)+vvmean(:,:,:)+wwmean(:,:,:))                           !Budget
-call fine_to_coarseS(1,ta1,tmean)                                                    !Budget 
-k(:,:,:)=tmean(:,:,:)                                                                !Budget
-
-!d2kdy2                                                                              !Budget
-call transpose_x_to_y(k,ta2)                                                         !Budget  
-call deryy(tb2,ta2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)               !Budget
-call transpose_y_to_x(tb2,td1)                                                       !Budget
-call fine_to_coarseS(1,td1,tmean)                                                    !Budget
-d2kdy2(:,:,:)=tmean(:,:,:)                                                           !Budget 
-
-
 if (iscalar==1) then
    !phiphimean=phi1*phi1
    ta1(:,:,:)=phi1(:,:,:)*phi1(:,:,:)
@@ -338,8 +316,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,uuvmean,'uuvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
-   call decomp_2d_write_one(1,duiuivdy,'duiuivdy.dat',1)           !Budget
-   call decomp_2d_write_one(1,d2kdy2,'d2kdy2.dat',1)               !Budget
+   call decomp_2d_write_one(1,pvmean,'pvmean.dat',1)               !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
    if (iscalar==1) then
