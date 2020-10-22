@@ -8,7 +8,6 @@ implicit none
 
 integer,parameter :: nzb=1
 integer,parameter :: nx1=256,ny1=257,nz1=256
-integer,parameter :: xlx=15.70796,zlz=6.283185
 character(len=3) suffix,suffix1
 character(len=20) nfichier,nfichier1,nchamp
 integer :: num,i,j,k,nb_fich,nb_proc_total,nb_proc,longueur,long,itime
@@ -19,11 +18,12 @@ real(8),dimension(nx1,ny1,nz1) :: umean1,vmean1,wmean1,phimean1,uumean1,vvmean1,
 real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,dudy1,uuvmean1, &
                                   vvvmean1,vwwmean1,pmean1,pvmean1
 real(8),dimension(nx1,ny1,nz1) :: dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz2,dwdz2 
-real(4),dimension(ny1) :: yp,ypi,ypii,dxp,dzp
+real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
-real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha
-real(8),dimension(ny1,21) :: q_stat
+real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp
+real(4) :: xlx=15.70796,zlz=6.283185
+real(8),dimension(ny1,28) :: q_stat
 
 
 open (15,file='yp.dat',form='formatted',status='unknown')
@@ -258,19 +258,19 @@ OPEN(11,FILE='dudy.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11)
 
-OPEN(11,FILE='pmean.dat',FORM='UNFORMATTED',&
-       ACCESS='DIRECT', RECL=8, STATUS='OLD')
-  COUNT = 1
-  DO K=1,nz1
-     DO J=1,ny1
-        DO I=1,nx1
-           READ(11,REC=COUNT) pmean1(I,J,K)
-           COUNT = COUNT + 1
-        ENDDO
-     ENDDO
-     !print *,k,'UZUZ',uvmean1(nx1/2,ny1/2,k)!/itime
-  ENDDO
-  CLOSE(11)
+!OPEN(11,FILE='pmean.dat',FORM='UNFORMATTED',&
+!       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+!  COUNT = 1
+!  DO K=1,nz1
+!     DO J=1,ny1
+!        DO I=1,nx1
+!           READ(11,REC=COUNT) pmean1(I,J,K)
+!           COUNT = COUNT + 1
+!        ENDDO
+!     ENDDO
+!     !print *,k,'UZUZ',uvmean1(nx1/2,ny1/2,k)!/itime
+!  ENDDO
+!  CLOSE(11)
 
 OPEN(11,FILE='pvmean.dat',FORM='UNFORMATTED',&
        ACCESS='DIRECT', RECL=8, STATUS='OLD')
@@ -313,7 +313,7 @@ utmean1=utmean1/itime1
 vtmean1=vtmean1/itime1
 uvmean1=uvmean1/itime1
 dudy1=dudy1/itime1
-pmean1=pmean1/itime1
+!pmean1=pmean1/itime1
 pvmean1=pvmean1/itime1
 
 !DO AN AVERAGE IN X AND Z
@@ -340,7 +340,7 @@ do j=1,ny1
       q_stat(j,14)=q_stat(j,14)+vvvmean1(i,j,k)
       q_stat(j,15)=q_stat(j,15)+vwwmean1(i,j,k)
       q_stat(j,16)=q_stat(j,16)+vwmean1(i,j,k)
-      q_stat(j,18)=q_stat(j,18)+pmean1(i,j,k)
+!      q_stat(j,18)=q_stat(j,18)+pmean1(i,j,k)
       q_stat(j,19)=q_stat(j,19)+pvmean1(i,j,k)
       
    enddo
@@ -396,13 +396,13 @@ do j=1,ny1-2
    q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((ypi(j+1)-ypi(j))*xl2)      !Viscous diffusion 
 enddo
 
-do j=1,ny1
-   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
-enddo
+!do j=1,ny1
+!   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
+!enddo
 
-do j=1,ny1-1
-   q_stat(j,18)=(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
-enddo
+!do j=1,ny1-1
+!   q_stat(j,18)=(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
+!enddo
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Dissipation
@@ -455,7 +455,7 @@ enddo
 !(2) Interpolate dudx2,dvdx2,dwdx2 dudz2,dvdz2,dwdz2
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-do i=1,nxl-1
+do i=1,nx1-1
   do j=1,ny1-1
     do k=1,nz1
       dudx2(i,j,k)=(dudx2(i,j,k)+dudx2(i,j+1,k))/2.0 
@@ -465,7 +465,7 @@ do i=1,nxl-1
   enddo
 enddo
 
-do i=1,nxl
+do i=1,nx1
   do j=1,ny1-1
     do k=1,nz1-1
       dudz2(i,j,k)=(dudz2(i,j,k)+dudz2(i,j+1,k))/2.0 
@@ -509,6 +509,13 @@ do j=1,ny1-1
    enddo
 enddo
 
+q_stat(:,20:22)=q_stat(:,20:22)/(nx1-1)/nz1
+q_stat(:,23:25)=q_stat(:,23:25)/nx1/nz1
+q_stat(:,26:28)=q_stat(:,26:28)/nx1/(nz1-1)
+
+q_stat(:,20)=q_stat(:,20)+q_stat(:,21)+q_stat(:,22)+ &
+             q_stat(:,23)+q_stat(:,24)+q_stat(:,25)+ &
+             q_stat(:,26)+q_stat(:,27)+q_stat(:,28)                            !Dissipation
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -546,7 +553,7 @@ enddo
 
   open (144,file='Aiding_flow_budget2.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,13),q_stat(j,18)
+      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,13),q_stat(j,20)
    enddo
    close(144)
 
@@ -592,7 +599,7 @@ do j=1,ny1
       q_stat(j,14)=q_stat(j,14)+vvvmean1(i,j,k)
       q_stat(j,15)=q_stat(j,15)+vwwmean1(i,j,k)
       q_stat(j,16)=q_stat(j,16)+vwmean1(i,j,k)
-      q_stat(j,18)=q_stat(j,18)+pmean1(i,j,k)
+!      q_stat(j,18)=q_stat(j,18)+pmean1(i,j,k)
       q_stat(j,19)=q_stat(j,19)+pvmean1(i,j,k)
    enddo
    enddo
@@ -625,14 +632,127 @@ do j=1,ny1-2
    q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((ypi(j+1)-ypi(j))*xl2)      !Viscous diffusion 
 enddo
 
-do j=1,ny1
-   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
+!do j=1,ny1
+!   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
+!enddo
+
+!do j=1,ny1-1
+!   q_stat(j,18)=(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
+!enddo
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!Dissipation
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!(1) Calculate dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz2,dwdz2 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+do i=1,nx1-1
+  do j=1,ny1
+    do k=1,nz1  
+      dudx2(i,j,k)=((sqrt((uumean1(i+1,j,k)-umean1(i+1,j,k)*umean1(i+1,j,k))/(u_to)**2)- &
+                   sqrt((uumean1(i,j,k)-umean1(i,j,k)*umean1(i,j,k))/(u_to)**2))/(dxp))**2  
+      dvdx2(i,j,k)=((sqrt((vvmean1(i+1,j,k)-vmean1(i+1,j,k)*vmean1(i+1,j,k))/(u_to)**2)- &
+                   sqrt((vvmean1(i,j,k)-vmean1(i,j,k)*vmean1(i,j,k))/(u_to)**2))/(dxp))**2  
+      dwdx2(i,j,k)=((sqrt((wwmean1(i+1,j,k)-wmean1(i+1,j,k)*wmean1(i+1,j,k))/(u_to)**2)- &
+                   sqrt((wwmean1(i,j,k)-wmean1(i,j,k)*wmean1(i,j,k))/(u_to)**2))/(dxp))**2  
+    enddo
+  enddo
+enddo 
+
+do i=1,nx1
+  do j=1,ny1-1
+    do k=1,nz1  
+      dudy2(i,j,k)=((sqrt((uumean1(i,j+1,k)-umean1(i,j+1,k)*umean1(i,j+1,k))/(u_to)**2)- &
+                   sqrt((uumean1(i,j,k)-umean1(i,j,k)*umean1(i,j,k))/(u_to)**2))/((yp(j+1)-yp(j))*xl2))**2  
+      dvdy2(i,j,k)=((sqrt((vvmean1(i,j+1,k)-vmean1(i,j+1,k)*vmean1(i,j+1,k))/(u_to)**2)- &
+                   sqrt((vvmean1(i,j,k)-vmean1(i,j,k)*vmean1(i,j,k))/(u_to)**2))/((yp(j+1)-yp(j))*xl2))**2  
+      dwdy2(i,j,k)=((sqrt((wwmean1(i,j+1,k)-wmean1(i,j+1,k)*wmean1(i,j+1,k))/(u_to)**2)- &
+                   sqrt((wwmean1(i,j,k)-wmean1(i,j,k)*wmean1(i,j,k))/(u_to)**2))/((yp(j+1)-yp(j))*xl2))**2  
+    enddo
+  enddo
+enddo 
+
+do i=1,nx1
+  do j=1,ny1
+    do k=1,nz1-1  
+      dudz2(i,j,k)=((sqrt((uumean1(i,j,k+1)-umean1(i,j,k+1)*umean1(i,j,k+1))/(u_to)**2)- &
+                   sqrt((uumean1(i,j,k)-umean1(i,j,k)*umean1(i,j,k))/(u_to)**2))/(dzp))**2  
+      dvdz2(i,j,k)=((sqrt((vvmean1(i,j,k+1)-vmean1(i,j,k+1)*vmean1(i,j,k+1))/(u_to)**2)- &
+                   sqrt((vvmean1(i,j,k)-vmean1(i,j,k)*vmean1(i,j,k))/(u_to)**2))/(dzp))**2  
+      dwdz2(i,j,k)=((sqrt((wwmean1(i,j,k+1)-wmean1(i,j,k+1)*wmean1(i,j,k+1))/(u_to)**2)- &
+                   sqrt((wwmean1(i,j,k)-wmean1(i,j,k)*wmean1(i,j,k))/(u_to)**2))/(dzp))**2  
+    enddo
+  enddo
+enddo 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!(2) Interpolate dudx2,dvdx2,dwdx2 dudz2,dvdz2,dwdz2
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+do i=1,nx1-1
+  do j=1,ny1-1
+    do k=1,nz1
+      dudx2(i,j,k)=(dudx2(i,j,k)+dudx2(i,j+1,k))/2.0 
+      dvdx2(i,j,k)=(dvdx2(i,j,k)+dvdx2(i,j+1,k))/2.0 
+      dwdx2(i,j,k)=(dwdx2(i,j,k)+dwdx2(i,j+1,k))/2.0 
+    enddo
+  enddo
+enddo
+
+do i=1,nx1
+  do j=1,ny1-1
+    do k=1,nz1-1
+      dudz2(i,j,k)=(dudz2(i,j,k)+dudz2(i,j+1,k))/2.0 
+      dvdz2(i,j,k)=(dvdz2(i,j,k)+dvdz2(i,j+1,k))/2.0 
+      dwdz2(i,j,k)=(dwdz2(i,j,k)+dwdz2(i,j+1,k))/2.0 
+    enddo
+  enddo
+enddo
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!(3) Average on space
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+do j=1,ny1-1
+   do i=1,nx1-1
+   do k=1,nz1 
+      q_stat(j,20)=q_stat(j,20)+dudx2(i,j,k)             
+      q_stat(j,21)=q_stat(j,21)+dvdx2(i,j,k)             
+      q_stat(j,22)=q_stat(j,22)+dwdx2(i,j,k)             
+   enddo
+   enddo
 enddo
 
 do j=1,ny1-1
-   q_stat(j,18)=(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
+   do i=1,nx1
+   do k=1,nz1 
+      q_stat(j,23)=q_stat(j,23)+dudy2(i,j,k)             
+      q_stat(j,24)=q_stat(j,24)+dvdy2(i,j,k)             
+      q_stat(j,25)=q_stat(j,25)+dwdy2(i,j,k)             
+   enddo
+   enddo
 enddo
 
+do j=1,ny1-1
+   do i=1,nx1
+   do k=1,nz1-1 
+      q_stat(j,26)=q_stat(j,26)+dudz2(i,j,k)             
+      q_stat(j,27)=q_stat(j,27)+dvdz2(i,j,k)             
+      q_stat(j,28)=q_stat(j,28)+dwdz2(i,j,k)             
+   enddo
+   enddo
+enddo
+
+q_stat(:,20:22)=q_stat(:,20:22)/(nx1-1)/nz1
+q_stat(:,23:25)=q_stat(:,23:25)/nx1/nz1
+q_stat(:,26:28)=q_stat(:,26:28)/nx1/(nz1-1)
+
+q_stat(:,20)=q_stat(:,20)+q_stat(:,21)+q_stat(:,22)+ &
+             q_stat(:,23)+q_stat(:,24)+q_stat(:,25)+ &
+             q_stat(:,26)+q_stat(:,27)+q_stat(:,28)                            !Dissipation
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 do j=1,ny1
    print 100,q_stat(j,1),q_stat(j,4),q_stat(j,4)-q_stat(j,1)*q_stat(j,1),q_stat(j,8)-q_stat(j,7)*q_stat(j,7)
    q_stat(j,4)=sqrt((q_stat(j,4)-q_stat(j,1)*q_stat(j,1)))/u_to
@@ -664,7 +784,7 @@ enddo
    
   open (144,file='Opposing_flow_budget2.dat',form='formatted',status='unknown')
   do j=ny1-1,ny1/2+1,-1
-      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,13),q_stat(j,18)
+      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,13),q_stat(j,20)
    enddo
    close(144)
 

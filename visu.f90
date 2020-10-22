@@ -316,6 +316,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,uuvmean,'uuvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
+   call decomp_2d_write_one(1,pmean,'pmean.dat',1)               !Budget
    call decomp_2d_write_one(1,pvmean,'pvmean.dat',1)               !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
