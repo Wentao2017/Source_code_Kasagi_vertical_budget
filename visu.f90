@@ -155,8 +155,10 @@ end subroutine VISU_INSTA
 !############################################################################
 !
 subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,vwwmean,&
-     pmean,pvmean,nxmsize,nymsize,nzmsize,phG,ph2,ph3,pp3)                  !Budget
+     uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudx,dudy,dudz,dvdx,dvdy,dvdz,&
+     dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
+     dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
+     phG,ph2,ph3,pp3)                  !Budget
 !
 !############################################################################
 
@@ -171,10 +173,12 @@ integer :: nxmsize,nymsize,nzmsize                                              
 TYPE(DECOMP_INFO) :: phG,ph2,ph3                                                     !Budget  
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                   dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean      !Budget
+                                                   dudx,dudy,dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
+                                                   dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean      !Budget
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean               !Budget
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1, td1                       !Budget
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,di1,td1,te1,tf1               !Budget
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2, di2                  !Budget
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,di3                    !Budget
 
 real(mytype),dimension(ph3%zst(1):ph3%zen(1),ph3%zst(2):ph3%zen(2),nzmsize) :: pp3         !Budget
 !Z PENCILS NXM NYM NZM-->NXM NYM NZ                                                        !Budget 
@@ -191,12 +195,114 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: tj1,tk1,dip1              
 call fine_to_coarseS(1,ux1,tmean)
 umean(:,:,:)=umean(:,:,:)+tmean(:,:,:)
 
+!dudx                                                                                !Budget
+call derx (tb1,ux1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dudx(:,:,:)=dudx(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dudxdudx=dudx*dudx                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dudxdudx(:,:,:)=dudxdudx(:,:,:)+tmean(:,:,:)                                         !Budget
+
+
 !dudy                                                                                !Budget
 call transpose_x_to_y(ux1,ta2)                                                       !Budget
 call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
-call transpose_y_to_x(tb2,td1)                                                       !Budget
-call fine_to_coarseS(1,td1,tmean)                                                    !Budget
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dudy(:,:,:)=dudy(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dudydudy=dudy*dudy                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dudydudy(:,:,:)=dudydudy(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dudz                                                                                !Budget
+call transpose_x_to_y(ux1,ta2)                                                       !Budget
+call transpose_y_to_z(ta2,ta3)                                                       !Budget 
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call transpose_z_to_y(tb3,tb2)                                                       !Budget
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dudz(:,:,:)=dudz(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dudzdudz=dudz*dudz                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dudzdudz(:,:,:)=dudzdudz(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dvdx                                                                                !Budget
+call derx (tb1,uy1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dvdx(:,:,:)=dvdx(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dvdxdvdx=dvdx*dvdx                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dvdxdvdx(:,:,:)=dvdxdvdx(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dvdy                                                                                !Budget
+call transpose_x_to_y(uy1,ta2)                                                       !Budget
+call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dvdy(:,:,:)=dvdy(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dvdydvdy=dvdy*dvdy                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dvdydvdy(:,:,:)=dvdydvdy(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dvdz                                                                                !Budget
+call transpose_x_to_y(uy1,ta2)                                                       !Budget
+call transpose_y_to_z(ta2,ta3)                                                       !Budget 
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call transpose_z_to_y(tb3,tb2)                                                       !Budget
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dvdz(:,:,:)=dvdz(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dvdzdvdz=dvdz*dvdz                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dvdzdvdz(:,:,:)=dvdzdvdz(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dwdx                                                                                !Budget
+call derx (tb1,uz1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dwdx(:,:,:)=dwdx(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dwdxdwdx=dwdx*dwdx                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dwdxdwdx(:,:,:)=dwdxdwdx(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dwdy                                                                                !Budget
+call transpose_x_to_y(uz1,ta2)                                                       !Budget
+call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dwdy(:,:,:)=dwdy(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dwdydwdy=dwdy*dwdy                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dwdydwdy(:,:,:)=dwdydwdy(:,:,:)+tmean(:,:,:)                                         !Budget
+
+!dwdz                                                                                !Budget
+call transpose_x_to_y(uz1,ta2)                                                       !Budget
+call transpose_y_to_z(ta2,ta3)                                                       !Budget 
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call transpose_z_to_y(tb3,tb2)                                                       !Budget
+call transpose_y_to_x(tb2,tb1)                                                       !Budget
+call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
+dwdz(:,:,:)=dwdz(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!dwdzdwdz=dwdz*dwdz                                                                  !Budget  
+tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
+call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
+dwdzdwdz(:,:,:)=dwdzdwdz(:,:,:)+tmean(:,:,:)                                         !Budget
 
 !vmean=uy1
 call fine_to_coarseS(1,uy1,tmean)
@@ -312,7 +418,24 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,vwmean,'vwmean.dat',1)
    call decomp_2d_write_one(1,utmean,'utmean.dat',1)
    call decomp_2d_write_one(1,vtmean,'vtmean.dat',1)
+   call decomp_2d_write_one(1,dudx,'dudx.dat',1)                   !Budget
    call decomp_2d_write_one(1,dudy,'dudy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dudz,'dudz.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdx,'dvdx.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdy,'dvdy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdz,'dvdz.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdx,'dwdx.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdy,'dwdy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdz,'dwdz.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dudxdudx,'dudxdudx.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dudydudy,'dudydudy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dudzdudz,'dudzdudz.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdxdvdx,'dvdxdvdx.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdydvdy,'dvdydvdy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dvdzdvdz,'dvdzdvdz.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdxdwdx,'dwdxdwdx.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdydwdy,'dwdydwdy.dat',1)                   !Budget
+   call decomp_2d_write_one(1,dwdzdwdz,'dwdzdwdz.dat',1)                   !Budget
    call decomp_2d_write_one(1,uuvmean,'uuvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vvvmean,'vvvmean.dat',1)             !Budget
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget

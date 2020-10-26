@@ -48,7 +48,9 @@ real(mytype), save, allocatable, dimension(:,:,:) :: ep1
 
 !arrays for statistic collection
 real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                     dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean                 !Budget
+                                                     dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean,&
+                                                     dudx,dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
+                                                     dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz                   !Budget
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -144,7 +146,24 @@ contains
     allocate (tmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   
     allocate (utmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (vtmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))    
+    allocate (dudx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
     allocate (dudy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dudz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dudxdudx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dudydudy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dudzdudz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdxdvdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdydvdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dvdzdvdz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdxdwdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdydwdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
+    allocate (dwdzdwdz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
     allocate (uuvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
     allocate (vvvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
     allocate (vwwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
