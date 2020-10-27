@@ -21,9 +21,9 @@ real(8),dimension(nx1,ny1,nz1) :: dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz
 real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
-real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp
-real(4) :: xlx=15.70796,zlz=6.283185
-real(8),dimension(ny1,28) :: q_stat
+real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp,Re_tau_A,Re_tau_O
+real(4) :: xlx=15.70796,zlz=6.283185,Gr=960000
+real(8),dimension(ny1,29) :: q_stat
 
 
 open (15,file='yp.dat',form='formatted',status='unknown')
@@ -363,6 +363,9 @@ alpha=xnu/pr
    xl3=xnu*(q_stat(2,1)-q_stat(1,1))/(yp(2)-yp(1))
    xl2=sqrt(xl3)/xnu
    print *,'Re_tau_Aiding = ',xl2
+   Re_tau_A=xl2
+   Re_tau_O=sqrt(xnu*(q_stat(ny1-1,1)-q_stat(ny1,1))/(yp(ny1)-yp(ny1-1)))/xnu
+   Re_tau_A=(Re_tau_A+Re_tau_O)/2.0  
    u_to1=xl2
    u_to=u_to1/re
    dxp=xlx/(nx1-1)*xl2
@@ -530,6 +533,7 @@ do j=1,ny1
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,12)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,29)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                             !Production by buoyancy
 enddo
 
 100 format(2F12.6,2F12.6,2F12.6,2F12.6,2F12.6,2F12.6,3x,2F12.6,3x,2F12.6)
@@ -547,7 +551,7 @@ enddo
 
   open (144,file='Aiding_flow_budget.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) yp(j),yp(j)*xl2,q_stat(j,12)
+      write(144,100) yp(j),yp(j)*xl2,q_stat(j,12),q_stat(j,29)
    enddo
    close(144)
 
@@ -763,6 +767,7 @@ do j=1,ny1
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,12)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,29)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                             !Production by buoyancy 
 enddo
 
   open (144,file='Opposing_flow.dat',form='formatted',status='unknown')
@@ -778,7 +783,7 @@ enddo
 
   open (144,file='Opposing_flow_budget.dat',form='formatted',status='unknown')
   do j=ny1,ny1/2+1,-1
-      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,12)
+      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,12),q_stat(j,29)
    enddo
    close(144)
    
