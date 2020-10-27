@@ -196,7 +196,7 @@ call fine_to_coarseS(1,ux1,tmean)
 umean(:,:,:)=umean(:,:,:)+tmean(:,:,:)
 
 !dudx                                                                                !Budget
-call derx (tb1,ux1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call derx (tb1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)           !Budget 
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dudx(:,:,:)=dudx(:,:,:)+tmean(:,:,:)                                                 !Budget
 
@@ -221,7 +221,7 @@ dudydudy(:,:,:)=dudydudy(:,:,:)+tmean(:,:,:)                                    
 !dudz                                                                                !Budget
 call transpose_x_to_y(ux1,ta2)                                                       !Budget
 call transpose_y_to_z(ta2,ta3)                                                       !Budget 
-call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)               !Budget 
 call transpose_z_to_y(tb3,tb2)                                                       !Budget
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
@@ -233,7 +233,7 @@ call fine_to_coarseS(1,tf1,tmean)                                               
 dudzdudz(:,:,:)=dudzdudz(:,:,:)+tmean(:,:,:)                                         !Budget
 
 !dvdx                                                                                !Budget
-call derx (tb1,uy1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call derx (tb1,uy1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)           !Budget 
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dvdx(:,:,:)=dvdx(:,:,:)+tmean(:,:,:)                                                 !Budget
 
@@ -244,7 +244,7 @@ dvdxdvdx(:,:,:)=dvdxdvdx(:,:,:)+tmean(:,:,:)                                    
 
 !dvdy                                                                                !Budget
 call transpose_x_to_y(uy1,ta2)                                                       !Budget
-call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call dery (tb2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)           !Budget 
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dvdy(:,:,:)=dvdy(:,:,:)+tmean(:,:,:)                                                 !Budget
@@ -257,7 +257,7 @@ dvdydvdy(:,:,:)=dvdydvdy(:,:,:)+tmean(:,:,:)                                    
 !dvdz                                                                                !Budget
 call transpose_x_to_y(uy1,ta2)                                                       !Budget
 call transpose_y_to_z(ta2,ta3)                                                       !Budget 
-call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)               !Budget 
 call transpose_z_to_y(tb3,tb2)                                                       !Budget
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
@@ -269,7 +269,7 @@ call fine_to_coarseS(1,tf1,tmean)                                               
 dvdzdvdz(:,:,:)=dvdzdvdz(:,:,:)+tmean(:,:,:)                                         !Budget
 
 !dwdx                                                                                !Budget
-call derx (tb1,uz1,di1,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)           !Budget 
+call derx (tb1,uz1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)           !Budget 
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dwdx(:,:,:)=dwdx(:,:,:)+tmean(:,:,:)                                                 !Budget
 
@@ -293,7 +293,7 @@ dwdydwdy(:,:,:)=dwdydwdy(:,:,:)+tmean(:,:,:)                                    
 !dwdz                                                                                !Budget
 call transpose_x_to_y(uz1,ta2)                                                       !Budget
 call transpose_y_to_z(ta2,ta3)                                                       !Budget 
-call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,ysize(1),ysize(2),ysize(3),1)               !Budget 
+call derz (tb3,ta3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)               !Budget 
 call transpose_z_to_y(tb3,tb2)                                                       !Budget
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget

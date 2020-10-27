@@ -50,7 +50,7 @@ real(mytype), save, allocatable, dimension(:,:,:) :: ep1
 real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
                                                      dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean,&
                                                      dudx,dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
-                                                     dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz                   !Budget
+                                                     dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz                     !Budget
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
