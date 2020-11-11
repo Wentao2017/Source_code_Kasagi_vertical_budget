@@ -906,7 +906,7 @@ call MPI_ALLREDUCE(ut3,ut4,1,real_type,MPI_SUM,MPI_COMM_WORLD,code)
 ut4=ut4/nproc
 
 !can=-2.*xnu*gdt(itr) ! Poisseuille    
-can=-(2./3.-ut4) ! constant flow rate
+can=-(2./3.-ut4) ! constant flow rate (ut4 is the bulk velocity)
 
 if (nrank==0) print *,nrank,'UT',ut4,can
 

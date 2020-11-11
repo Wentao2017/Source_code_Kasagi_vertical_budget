@@ -47,10 +47,12 @@ real(mytype), save, allocatable, dimension(:,:,:) :: px1, py1, pz1
 real(mytype), save, allocatable, dimension(:,:,:) :: ep1
 
 !arrays for statistic collection
-real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean,utmean,vtmean,&
-                                                     dudy,uuvmean,vvvmean,vwwmean,pmean,pvmean,&
-                                                     dudx,dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
-                                                     dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz                     !Budget
+real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,&
+                                                     vwmean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,&
+                                                     vwwmean,pmean,pvmean,dudx,dudz,dvdx,dvdy,dvdz,&
+                                                     dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
+                                                     dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,&                     !Budget
+                                                     dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -169,6 +171,12 @@ contains
     allocate (vwwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   !Budget
     allocate (pmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))     !Budget
     allocate (pvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))    !Budget
+    allocate (dphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dphidxdphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dphidydphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dphidzdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
 
  
     if (iscalar==1) then

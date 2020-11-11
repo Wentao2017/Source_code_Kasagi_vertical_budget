@@ -109,6 +109,8 @@ dvdxdvdx=0.;dvdydvdy=0.;dvdzdvdz=0.                              !Budget
 dwdxdwdx=0.;dwdydwdy=0.;dwdzdwdz=0.                              !Budget
 uuvmean=0.;vvvmean=0.                                            !Budget
 vwwmean=0.;pmean=0.;pvmean=0.                                            !Budget 
+dphidx=0.;dphidxdphidx=0.;dphidy=0.;dphidydphidy=0.
+dphidz=0.;dphidzdphidz=0.
 
 t1 = MPI_WTIME()
 
@@ -244,7 +246,7 @@ do itime=ifirst,ilast
                    uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudx,dudy,dudz,dvdx,dvdy,dvdz,&
                    dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
                    dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
-                   phG,ph2,ph3,pp3)                  !Budget
+                   phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz)                  !Budget
 
    endif
 
