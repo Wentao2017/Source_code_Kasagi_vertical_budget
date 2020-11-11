@@ -158,7 +158,8 @@ subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmea
      uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudx,dudy,dudz,dvdx,dvdy,dvdz,&
      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
      dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
-     phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz)                  !Budget
+     phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
+     dudxdphidx,dudydphidy,dudzdphidz)                  !Budget
 !
 !############################################################################
 
@@ -178,7 +179,7 @@ real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvme
                                                    dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,&
                                                    dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,&
                                                    pmean,pvmean,dphidx,dphidxdphidx,dphidy,dphidydphidy,&
-                                                   dphidz,dphidzdphidz               !Budget    
+                                                   dphidz,dphidzdphidz,dudxdphidx,dudydphidy,dudzdphidz !Budget    
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean                              !Budget
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,di1,td1,te1,tf1,tg1,th1               !Budget
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2,tc2,di2                  !Budget
@@ -377,6 +378,10 @@ if (iscalar==1) then
    !dphidz
    call fine_to_coarseS(1,tg1,tmean)
    dphidz(:,:,:)=dphidz(:,:,:)+tmean(:,:,:)
+
+   !dudxdphidx=dudx*dphidx
+   call derx(tb1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+   call derx(ta1,phi1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)  
 endif
 
 !uumean=ux1*ux1

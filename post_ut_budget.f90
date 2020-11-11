@@ -791,7 +791,7 @@ do j=1,ny1
    q_stat(j,9)=(q_stat(j,9)-q_stat(j,1)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
-   q_stat(j,38)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,38)=-q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                          !Production by buoyancy
    q_stat(j,21)=-(q_stat(j,29)-q_stat(j,21)*q_stat(j,21)+ &
                   q_stat(j,30)-q_stat(j,12)*q_stat(j,12)+ &
@@ -950,7 +950,7 @@ do j=1,ny1
    q_stat(j,9)=(q_stat(j,9)-q_stat(j,1)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
-   q_stat(j,38)=-q_stat(j,11)*q_stat(j,12)*xnu/(u_to*u_to)                     !Shear production
+   q_stat(j,38)=-q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                          !Production by buoyancy 
    q_stat(j,21)=-(q_stat(j,29)-q_stat(j,21)*q_stat(j,21)+ &
                   q_stat(j,30)-q_stat(j,12)*q_stat(j,12)+ &
