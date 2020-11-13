@@ -791,7 +791,7 @@ do j=1,ny1
    q_stat(j,9)=(q_stat(j,9)-q_stat(j,1)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
-   q_stat(j,38)=-q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
+   q_stat(j,38)=q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                          !Production by buoyancy
    q_stat(j,21)=-(q_stat(j,29)-q_stat(j,21)*q_stat(j,21)+ &
                   q_stat(j,30)-q_stat(j,12)*q_stat(j,12)+ &
@@ -804,7 +804,7 @@ do j=1,ny1
                   q_stat(j,37)-q_stat(j,28)*q_stat(j,28))/(u_to*xl2)**2           !Dissipation
    q_stat(j,45)=alpha*(q_stat(j,40)+q_stat(j,42)+q_stat(j,44)-q_stat(j,39)*q_stat(j,39)-q_stat(j,41)*&
                  q_stat(j,41)-q_stat(j,43)*q_stat(j,43))/(x15*x15)
-   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))
+   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))*u_to/x15
 
 enddo
 
@@ -821,19 +821,19 @@ enddo
    enddo
    close(144)
 
-  open (144,file='Aiding_flow_budget.dat',form='formatted',status='unknown')
+  open (144,file='Aiding_flow_budget_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
       write(144,100) yp(j),yp(j)*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,21)
    enddo
    close(144)
 
-  open (144,file='Aiding_flow_budget2.dat',form='formatted',status='unknown')
+  open (144,file='Aiding_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
       write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,13),q_stat(j,18)
    enddo
    close(144)
 
-  open (144,file='Aiding_flow_budget3.dat',form='formatted',status='unknown')
+  open (144,file='Aiding_flow_budget3_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
       write(144,100) ypii(j),ypii(j)*xl2,q_stat(j,17)
    enddo
@@ -950,7 +950,7 @@ do j=1,ny1
    q_stat(j,9)=(q_stat(j,9)-q_stat(j,1)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,10)=(q_stat(j,10)-q_stat(j,2)*q_stat(j,7))/(-u_to*x15)
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
-   q_stat(j,38)=-q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
+   q_stat(j,38)=q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=-(Gr/(2*Re_tau_A)**3)*q_stat(j,9)*x15                          !Production by buoyancy 
    q_stat(j,21)=-(q_stat(j,29)-q_stat(j,21)*q_stat(j,21)+ &
                   q_stat(j,30)-q_stat(j,12)*q_stat(j,12)+ &
@@ -963,7 +963,7 @@ do j=1,ny1
                   q_stat(j,37)-q_stat(j,28)*q_stat(j,28))/(u_to*xl2)**2           !Dissipation
    q_stat(j,45)=alpha*(q_stat(j,40)+q_stat(j,42)+q_stat(j,44)-q_stat(j,39)*q_stat(j,39)-q_stat(j,41)*&
                  q_stat(j,41)-q_stat(j,43)*q_stat(j,43))/(x15*x15)
-   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))
+   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))*u_to/x15
 enddo
 
   open (144,file='Opposing_flow_cf_Nu.dat',form='formatted',status='unknown')
@@ -977,19 +977,19 @@ enddo
    close(144)
 
 
-  open (144,file='Opposing_flow_budget.dat',form='formatted',status='unknown')
+  open (144,file='Opposing_flow_budget_ut.dat',form='formatted',status='unknown')
   do j=ny1,ny1/2+1,-1
       write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,21)
    enddo
    close(144)
    
-  open (144,file='Opposing_flow_budget2.dat',form='formatted',status='unknown')
+  open (144,file='Opposing_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=ny1-1,ny1/2+1,-1
       write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,13),q_stat(j,18)
    enddo
    close(144)
 
-  open (144,file='Opposing_flow_budget3.dat',form='formatted',status='unknown')
+  open (144,file='Opposing_flow_budget3_ut.dat',form='formatted',status='unknown')
   do j=ny1-2,ny1/2+1,-1
       write(144,100) (2.0-ypii(j)),(2.0-ypii(j))*xl2,q_stat(j,17)
    enddo

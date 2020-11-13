@@ -381,7 +381,11 @@ if (iscalar==1) then
 
    !dudxdphidx=dudx*dphidx
    call derx(tb1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
-   call derx(ta1,phi1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)  
+   call derx(ta1,phi1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0) 
+   td1(:,:,:)=tb1(:,:,:)*ta1(:,:,:) 
+   call fine_to_coarseS(1,td1,tmean)
+   dudxdphidx(:,:,:)=dudxdphidx(:,:,:)+tmean(:,:,:) 
+
 endif
 
 !uumean=ux1*ux1

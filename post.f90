@@ -804,7 +804,7 @@ do j=1,ny1
                   q_stat(j,37)-q_stat(j,28)*q_stat(j,28))/(u_to*xl2)**2           !Dissipation
    q_stat(j,45)=alpha*(q_stat(j,40)+q_stat(j,42)+q_stat(j,44)-q_stat(j,39)*q_stat(j,39)-q_stat(j,41)*&
                  q_stat(j,41)-q_stat(j,43)*q_stat(j,43))/(x15*x15)
-   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))
+   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))*u_to/x15
 
 enddo
 
@@ -963,7 +963,7 @@ do j=1,ny1
                   q_stat(j,37)-q_stat(j,28)*q_stat(j,28))/(u_to*xl2)**2           !Dissipation
    q_stat(j,45)=alpha*(q_stat(j,40)+q_stat(j,42)+q_stat(j,44)-q_stat(j,39)*q_stat(j,39)-q_stat(j,41)*&
                  q_stat(j,41)-q_stat(j,43)*q_stat(j,43))/(x15*x15)
-   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))
+   q_stat(j,46)=q_stat(j,11)*q_stat(j,41)/(q_stat(j,10)*q_stat(j,12))*u_to/x15
 enddo
 
   open (144,file='Opposing_flow_cf_Nu.dat',form='formatted',status='unknown')
