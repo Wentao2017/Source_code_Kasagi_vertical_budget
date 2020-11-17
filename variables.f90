@@ -52,7 +52,8 @@ real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vv
                                                      vwwmean,pmean,pvmean,dudx,dudz,dvdx,dvdy,dvdz,&
                                                      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
                                                      dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,&                     !Budget
-                                                     dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz
+                                                     dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
+                                                     dudxdphidx,dudydphidy,dudzdphidz
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -177,6 +178,9 @@ contains
     allocate (dphidydphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (dphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (dphidzdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dudxdphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dudydphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dudzdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
 
  
     if (iscalar==1) then

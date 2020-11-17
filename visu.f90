@@ -182,8 +182,8 @@ real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvme
                                                    dphidz,dphidzdphidz,dudxdphidx,dudydphidy,dudzdphidz !Budget    
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean                              !Budget
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,di1,td1,te1,tf1,tg1,th1               !Budget
-real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2,tc2,di2                  !Budget
-real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,di3                    !Budget
+real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2,tc2,tf2,di2                  !Budget
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,td3,te3,di3                    !Budget
 
 real(mytype),dimension(ph3%zst(1):ph3%zen(1),ph3%zst(2):ph3%zen(2),nzmsize) :: pp3         !Budget
 !Z PENCILS NXM NYM NZM-->NXM NYM NZ                                                        !Budget 
@@ -386,6 +386,30 @@ if (iscalar==1) then
    call fine_to_coarseS(1,td1,tmean)
    dudxdphidx(:,:,:)=dudxdphidx(:,:,:)+tmean(:,:,:) 
 
+   !dudydphidy=dudy*dphidy
+   call transpose_x_to_y(ux1,ta2)
+   call transpose_x_to_y(phi1,tb2)
+   call dery (tc2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1) 
+   call dery (tf2,tb2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+   call transpose_y_to_x(tc2,ta1) 
+   call transpose_y_to_x(tf2,tb1) 
+   td1(:,:,:)=ta1(:,:,:)*tb1(:,:,:)
+   call fine_to_coarseS(1,td1,tmean)
+   dudydphidy(:,:,:)=dudydphidy(:,:,:)+tmean(:,:,:)
+
+   !dudzdphidz=dudz*dphidz
+   call transpose_y_to_z(ta2,ta3)
+   call transpose_y_to_z(tb2,tb3)
+   call derz (td3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1) 
+   call derz (te3,tb3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
+   call transpose_z_to_y(td3,ta2)
+   call transpose_z_to_y(te3,tb2)
+   call transpose_y_to_x(ta2,ta1)
+   call transpose_y_to_x(tb2,tb1)
+   td1(:,:,:)=ta1(:,:,:)*tb1(:,:,:)
+   call fine_to_coarseS(1,td1,tmean)
+   dudzdphidz(:,:,:)=dudzdphidz(:,:,:)+tmean(:,:,:)
+
 endif
 
 !uumean=ux1*ux1
@@ -501,6 +525,9 @@ if (mod(itime,isave)==0) then
       call decomp_2d_write_one(1,dphidydphidy,'dphidydphidy.dat',1)
       call decomp_2d_write_one(1,dphidz,'dphidz.dat',1)
       call decomp_2d_write_one(1,dphidzdphidz,'dphidzdphidz.dat',1)
+      call decomp_2d_write_one(1,dudxdphidx,'dudxdphidx.dat',1)
+      call decomp_2d_write_one(1,dudydphidy,'dudydphidy.dat',1)
+      call decomp_2d_write_one(1,dudzdphidz,'dudzdphidz.dat',1)
       if (nrank==0) print *,'write stat arrays scalar done!'
    endif
 !   call decomp_2d_write_one(nx_global,ny_global,nz_global,1,ux1,'compa.dat')
