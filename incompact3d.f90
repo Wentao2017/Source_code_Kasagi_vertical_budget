@@ -100,7 +100,7 @@ umean=0.;vmean=0.;wmean=0.
 uumean=0.;vvmean=0.;wwmean=0.
 uvmean=0.;uwmean=0.;vwmean=0.
 phimean=0.;phiphimean=0.
-utmean=0.;vtmean=0.
+utmean=0.;vtmean=0.;wtmean=0.
 dudx=0.;dudy=0.;dudz=0.                                          !Budget
 dvdx=0.;dvdy=0.;dvdz=0.                                          !Budget
 dwdx=0.;dwdy=0.;dwdz=0.                                          !Budget
@@ -112,6 +112,7 @@ vwwmean=0.;pmean=0.;pvmean=0.                                            !Budget
 dphidx=0.;dphidxdphidx=0.;dphidy=0.;dphidydphidy=0.
 dphidz=0.;dphidzdphidz=0.
 dudxdphidx=0.;dudydphidy=0.;dudzdphidz=0.
+uphiumean=0.;uphivmean=0.;uphiwmean=0.
 
 t1 = MPI_WTIME()
 
@@ -244,11 +245,12 @@ do itime=ifirst,ilast
 
    if(itime.gt.100000)then
     call STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-                   uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,dudx,dudy,dudz,dvdx,dvdy,dvdz,&
-                   dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
-                   dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
+                   uvmean,uwmean,vwmean,phiphimean,tmean,utmean,vtmean,wtmean,dudx,dudy,&
+                   dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,&
+                   dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,&
+                   vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
                    phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-                   dudxdphidx,dudydphidy,dudzdphidz)                  !Budget
+                   dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean)                  !Budget
 
    endif
 

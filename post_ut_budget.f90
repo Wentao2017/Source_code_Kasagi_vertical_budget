@@ -841,7 +841,7 @@ do j=1,ny1
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,38)=q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=(Gr/(2*xl2)**3)*q_stat(j,8)**2*x15        !Production by buoyancy
-   q_stat(j,50)=-(1+1/Pr)*(q_stat(j,47)+q_stat(j,48)+q_stat(j,49)- &
+   q_stat(j,50)=(1+1/Pr)*(q_stat(j,47)+q_stat(j,48)+q_stat(j,49)- &
                            q_stat(j,21)*q_stat(j,39)-q_stat(j,12)*q_stat(j,41)- &
                            q_stat(j,22)*q_stat(j,43))/(u_to*x15*xl2**2)           !Dissipation
    q_stat(j,45)=alpha*(q_stat(j,40)+q_stat(j,42)+q_stat(j,44)-q_stat(j,39)*q_stat(j,39)-q_stat(j,41)*&
@@ -997,7 +997,7 @@ do j=1,ny1
    q_stat(j,11)=(q_stat(j,11)-q_stat(j,1)*q_stat(j,2))/(u_to*u_to)  
    q_stat(j,38)=q_stat(j,11)*q_stat(j,41)*xnu/(u_to*x15)-q_stat(j,10)*q_stat(j,12)*xnu/(u_to*u_to)   !production
    q_stat(j,20)=(Gr/(2*xl2)**3)*q_stat(j,8)**2*x15       !Production by buoyancy
-   q_stat(j,50)=-(1+1/Pr)*(q_stat(j,47)+q_stat(j,48)+q_stat(j,49)- &
+   q_stat(j,50)=(1+1/Pr)*(q_stat(j,47)+q_stat(j,48)+q_stat(j,49)- &
                            q_stat(j,21)*q_stat(j,39)-q_stat(j,12)*q_stat(j,41)-&
                            q_stat(j,22)*q_stat(j,43))/(u_to*x15*xl2**2)    !Dissipation
 

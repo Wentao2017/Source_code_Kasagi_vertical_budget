@@ -48,12 +48,12 @@ real(mytype), save, allocatable, dimension(:,:,:) :: ep1
 
 !arrays for statistic collection
 real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,uwmean,&
-                                                     vwmean,tmean,utmean,vtmean,dudy,uuvmean,vvvmean,&
+                                                     vwmean,tmean,utmean,vtmean,wtmean,dudy,uuvmean,vvvmean,&
                                                      vwwmean,pmean,pvmean,dudx,dudz,dvdx,dvdy,dvdz,&
                                                      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
                                                      dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,&                     !Budget
                                                      dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-                                                     dudxdphidx,dudydphidy,dudzdphidz
+                                                     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -149,6 +149,7 @@ contains
     allocate (tmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))   
     allocate (utmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (vtmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))    
+    allocate (wtmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))    
     allocate (dudx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
     allocate (dudy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
     allocate (dudz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))      !Budget
@@ -181,6 +182,9 @@ contains
     allocate (dudxdphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (dudydphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (dudzdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (uphiumean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (uphivmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (uphiwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
 
  
     if (iscalar==1) then

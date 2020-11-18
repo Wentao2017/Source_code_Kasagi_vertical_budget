@@ -159,7 +159,7 @@ subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmea
      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
      dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
      phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-     dudxdphidx,dudydphidy,dudzdphidz)                  !Budget
+     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean)                  !Budget
 !
 !############################################################################
 
@@ -174,12 +174,13 @@ integer :: nxmsize,nymsize,nzmsize                                              
 TYPE(DECOMP_INFO) :: phG,ph2,ph3                                                     !Budget  
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvmean,wwmean,uvmean,&
-                                                   uwmean,vwmean,tmean,utmean,vtmean,dudx,dudy,&
+                                                   uwmean,vwmean,tmean,utmean,vtmean,wtmean,dudx,dudy,&
                                                    dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz,dudxdudx,&
                                                    dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,&
                                                    dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,&
                                                    pmean,pvmean,dphidx,dphidxdphidx,dphidy,dphidydphidy,&
-                                                   dphidz,dphidzdphidz,dudxdphidx,dudydphidy,dudzdphidz !Budget    
+                                                   dphidz,dphidzdphidz,dudxdphidx,dudydphidy,dudzdphidz,&
+                                                   uphiumean,uphivmean,uphiwmean !Budget    
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean                              !Budget
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,di1,td1,te1,tf1,tg1,th1               !Budget
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2,tc2,tf2,di2                  !Budget
@@ -410,6 +411,21 @@ if (iscalar==1) then
    call fine_to_coarseS(1,td1,tmean)
    dudzdphidz(:,:,:)=dudzdphidz(:,:,:)+tmean(:,:,:)
 
+   !uphiumean=ux1*phi1*ux1
+   ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)*ux1(:,:,:)      !Budget
+   call fine_to_coarseS(1,ta1,tmean)                 !Budget
+   uphiumean(:,:,:)=uphiumean(:,:,:)+tmean(:,:,:)    !Budget  
+
+   !uphivmean=ux1*phi1*uy1
+   ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)*uy1(:,:,:)      !Budget
+   call fine_to_coarseS(1,ta1,tmean)                 !Budget
+   uphivmean(:,:,:)=uphivmean(:,:,:)+tmean(:,:,:)    !Budget
+
+   !uphiwmean=ux1*phi1*uz1
+   ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)*uz1(:,:,:)      !Budget
+   call fine_to_coarseS(1,ta1,tmean)                 !Budget
+   uphiwmean(:,:,:)=uphiwmean(:,:,:)+tmean(:,:,:)    !Budget
+  
 endif
 
 !uumean=ux1*ux1
@@ -467,6 +483,11 @@ ta1(:,:,:)=uy1(:,:,:)*phi1(:,:,:)
 call fine_to_coarseS(1,ta1,tmean)
 vtmean(:,:,:)=vtmean(:,:,:)+tmean(:,:,:)
 
+!wtmean=uz1*phi1
+ta1(:,:,:)=uz1(:,:,:)*phi1(:,:,:)
+call fine_to_coarseS(1,ta1,tmean)
+wtmean(:,:,:)=wtmean(:,:,:)+tmean(:,:,:)
+
 if (iscalar==1) then
    !phiphimean=phi1*phi1
    ta1(:,:,:)=phi1(:,:,:)*phi1(:,:,:)
@@ -491,6 +512,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,vwmean,'vwmean.dat',1)
    call decomp_2d_write_one(1,utmean,'utmean.dat',1)
    call decomp_2d_write_one(1,vtmean,'vtmean.dat',1)
+   call decomp_2d_write_one(1,wtmean,'wtmean.dat',1)
    call decomp_2d_write_one(1,dudx,'dudx.dat',1)                   !Budget
    call decomp_2d_write_one(1,dudy,'dudy.dat',1)                   !Budget
    call decomp_2d_write_one(1,dudz,'dudz.dat',1)                   !Budget
@@ -528,6 +550,9 @@ if (mod(itime,isave)==0) then
       call decomp_2d_write_one(1,dudxdphidx,'dudxdphidx.dat',1)
       call decomp_2d_write_one(1,dudydphidy,'dudydphidy.dat',1)
       call decomp_2d_write_one(1,dudzdphidz,'dudzdphidz.dat',1)
+      call decomp_2d_write_one(1,uphiumean,'uphiumean.dat',1)
+      call decomp_2d_write_one(1,uphivmean,'uphivmean.dat',1)
+      call decomp_2d_write_one(1,uphiwmean,'uphiwmean.dat',1)
       if (nrank==0) print *,'write stat arrays scalar done!'
    endif
 !   call decomp_2d_write_one(nx_global,ny_global,nz_global,1,ux1,'compa.dat')
