@@ -113,7 +113,9 @@ dphidx=0.;dphidxdphidx=0.;dphidy=0.;dphidydphidy=0.
 dphidz=0.;dphidzdphidz=0.
 dudxdphidx=0.;dudydphidy=0.;dudzdphidz=0.
 uphiumean=0.;uphivmean=0.;uphiwmean=0.
-
+dpdx=0.;phidpdx=0.
+phidudx=0.;phidudy=0.;phidudz=0.
+udphidx=0.;udphidy=0.;udphidz=0.
 t1 = MPI_WTIME()
 
 !div: nx ny nz --> nxm ny nz --> nxm nym nz --> nxm nym nzm
@@ -250,7 +252,8 @@ do itime=ifirst,ilast
                    dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,&
                    vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
                    phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-                   dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean)                  !Budget
+                   dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean,phidpdx,dpdx,&
+                   phidudx,phidudy,phidudz,udphidx,udphidy,udphidz)                  !Budget
 
    endif
 

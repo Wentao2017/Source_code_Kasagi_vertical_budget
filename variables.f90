@@ -53,7 +53,8 @@ real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vv
                                                      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,&
                                                      dvdydvdy,dvdzdvdz,dwdxdwdx,dwdydwdy,dwdzdwdz,&                     !Budget
                                                      dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-                                                     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean
+                                                     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean,&
+                                                     phidpdx,dpdx,phidudx,phidudy,phidudz,udphidx,udphidy,udphidz
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -185,6 +186,14 @@ contains
     allocate (uphiumean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (uphivmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (uphiwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidpdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dpdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidudx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidudy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidudz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (udphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (udphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (udphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
 
  
     if (iscalar==1) then

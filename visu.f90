@@ -159,7 +159,8 @@ subroutine STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmea
      dwdx,dwdy,dwdz,dudxdudx,dudydudy,dudzdudz,dvdxdvdx,dvdydvdy,dvdzdvdz,dwdxdwdx,&
      dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,pmean,pvmean,nxmsize,nymsize,nzmsize,&
      phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
-     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean)                  !Budget
+     dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean,phidpdx,dpdx,& 
+     phidudx,phidudy,phidudz,udphidx,udphidy,udphidz)                  !Budget
 !
 !############################################################################
 
@@ -180,7 +181,8 @@ real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: umean,vmean,wmean,uumean,vvme
                                                    dwdxdwdx,dwdydwdy,dwdzdwdz,uuvmean,vvvmean,vwwmean,&
                                                    pmean,pvmean,dphidx,dphidxdphidx,dphidy,dphidydphidy,&
                                                    dphidz,dphidzdphidz,dudxdphidx,dudydphidy,dudzdphidz,&
-                                                   uphiumean,uphivmean,uphiwmean !Budget    
+                                                   uphiumean,uphivmean,uphiwmean,phidpdx,dpdx,&
+                                                   phidudx,phidudy,phidudz,udphidx,udphidy,udphidz !Budget    
 real(mytype),dimension(xszS(1),xszS(2),xszS(3)) :: phimean, phiphimean                              !Budget
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,di1,td1,te1,tf1,tg1,th1               !Budget
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2, tb2,tc2,tf2,di2                  !Budget
@@ -206,6 +208,11 @@ call derx (tb1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)           !B
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dudx(:,:,:)=dudx(:,:,:)+tmean(:,:,:)                                                 !Budget
 
+!phidudx=phi*dudx
+tf1(:,:,:)=phi1(:,:,:)*tb1(:,:,:)
+call fine_to_coarseS(1,tf1,tmean)
+phidudx(:,:,:)=phidudx(:,:,:)+tmean(:,:,:)
+
 !dudxdudx=dudx*dudx                                                                  !Budget  
 tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
 call fine_to_coarseS(1,tf1,tmean)                                                    !Budget 
@@ -218,6 +225,11 @@ call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)      
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dudy(:,:,:)=dudy(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!phidudy=phi*dudy
+tf1(:,:,:)=phi1(:,:,:)*tb1(:,:,:)
+call fine_to_coarseS(1,tf1,tmean)
+phidudy(:,:,:)=phidudy(:,:,:)+tmean(:,:,:)
 
 !dudydudy=dudy*dudy                                                                  !Budget  
 tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
@@ -232,6 +244,11 @@ call transpose_z_to_y(tb3,tb2)                                                  
 call transpose_y_to_x(tb2,tb1)                                                       !Budget
 call fine_to_coarseS(1,tb1,tmean)                                                    !Budget
 dudz(:,:,:)=dudz(:,:,:)+tmean(:,:,:)                                                 !Budget
+
+!phidudz=phi*dudz
+tf1(:,:,:)=phi1(:,:,:)*tb1(:,:,:)
+call fine_to_coarseS(1,tf1,tmean)
+phidudz(:,:,:)=phidudz(:,:,:)+tmean(:,:,:)
 
 !dudzdudz=dudz*dudz                                                                  !Budget  
 tf1(:,:,:)=tb1(:,:,:)*tb1(:,:,:)                                                     !Budget
@@ -335,6 +352,16 @@ call interi6(tj1,ti1,dip1,sx,cifip6,cisip6,ciwip6,cifx6,cisx6,ciwx6,&           
 call fine_to_coarseS(1,tj1,tmean)                                                    !Budget
 pmean(:,:,:)=pmean(:,:,:)+tmean(:,:,:)                                               !Budget
 
+!dpdx
+call derx(ta1,tj1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+call fine_to_coarseS(1,ta1,tmean)
+dpdx(:,:,:)=dpdx(:,:,:)+tmean(:,:,:)
+
+!phidpdx=phi*dpdx
+tf1(:,:,:)=phi1(:,:,:)*ta1(:,:,:)
+call fine_to_coarseS(1,tf1,tmean)
+phidpdx(:,:,:)=phidpdx(:,:,:)+tmean(:,:,:)
+
 !pvmean=tj1*uy1                                                                      !Budget
 ta1(:,:,:)=tj1(:,:,:)*uy1(:,:,:)                                                     !Budget                
 call fine_to_coarseS(1,ta1,tmean)                                                    !Budget
@@ -355,6 +382,11 @@ if (iscalar==1) then
    call fine_to_coarseS(1,ta1,tmean)
    dphidx(:,:,:)=dphidx(:,:,:)+tmean(:,:,:)
 
+   !udphidx=u*dphidx
+   tf1(:,:,:)=ux1(:,:,:)*ta1(:,:,:)
+   call fine_to_coarseS(1,tf1,tmean)
+   udphidx(:,:,:)=udphidx(:,:,:)+tmean(:,:,:)
+
    !dphidydphidy=dphidy*dphidy
    call transpose_x_to_y(phi1,ta2)
    call dery(tb2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
@@ -366,6 +398,11 @@ if (iscalar==1) then
    !dphidy
    call fine_to_coarseS(1,td1,tmean)
    dphidy(:,:,:)=dphidy(:,:,:)+tmean(:,:,:)
+
+   !udphidy=u*dphidy
+   tf1(:,:,:)=ux1(:,:,:)*td1(:,:,:)
+   call fine_to_coarseS(1,tf1,tmean)
+   udphidy(:,:,:)=udphidy(:,:,:)+tmean(:,:,:)
 
    !dphidzdphidz=dphidz*dphidz
    call transpose_y_to_z(ta2,ta3)
@@ -379,6 +416,11 @@ if (iscalar==1) then
    !dphidz
    call fine_to_coarseS(1,tg1,tmean)
    dphidz(:,:,:)=dphidz(:,:,:)+tmean(:,:,:)
+
+   !udphidz=u*dphidz
+   tf1(:,:,:)=ux1(:,:,:)*tg1(:,:,:)
+   call fine_to_coarseS(1,tf1,tmean)
+   udphidz(:,:,:)=udphidz(:,:,:)+tmean(:,:,:)
 
    !dudxdphidx=dudx*dphidx
    call derx(tb1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
@@ -425,7 +467,7 @@ if (iscalar==1) then
    ta1(:,:,:)=ux1(:,:,:)*phi1(:,:,:)*uz1(:,:,:)      !Budget
    call fine_to_coarseS(1,ta1,tmean)                 !Budget
    uphiwmean(:,:,:)=uphiwmean(:,:,:)+tmean(:,:,:)    !Budget
-  
+     
 endif
 
 !uumean=ux1*ux1
@@ -536,6 +578,7 @@ if (mod(itime,isave)==0) then
    call decomp_2d_write_one(1,vwwmean,'vwwmean.dat',1)             !Budget
    call decomp_2d_write_one(1,pmean,'pmean.dat',1)               !Budget
    call decomp_2d_write_one(1,pvmean,'pvmean.dat',1)               !Budget
+   call decomp_2d_write_one(1,dpdx,'dpdx.dat',1)               !Budget
 
    if (nrank==0) print *,'write stat arrays velocity done!'
    if (iscalar==1) then
@@ -553,6 +596,13 @@ if (mod(itime,isave)==0) then
       call decomp_2d_write_one(1,uphiumean,'uphiumean.dat',1)
       call decomp_2d_write_one(1,uphivmean,'uphivmean.dat',1)
       call decomp_2d_write_one(1,uphiwmean,'uphiwmean.dat',1)
+      call decomp_2d_write_one(1,phidpdx,'phidpdx.dat',1)
+      call decomp_2d_write_one(1,phidudx,'phidudx.dat',1)
+      call decomp_2d_write_one(1,phidudy,'phidudy.dat',1)
+      call decomp_2d_write_one(1,phidudz,'phidudz.dat',1)
+      call decomp_2d_write_one(1,udphidx,'udphidx.dat',1)
+      call decomp_2d_write_one(1,udphidy,'udphidy.dat',1)
+      call decomp_2d_write_one(1,udphidz,'udphidz.dat',1)
       if (nrank==0) print *,'write stat arrays scalar done!'
    endif
 !   call decomp_2d_write_one(nx_global,ny_global,nz_global,1,ux1,'compa.dat')
