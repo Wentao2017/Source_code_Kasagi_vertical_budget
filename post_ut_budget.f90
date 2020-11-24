@@ -15,18 +15,19 @@ integer :: nxyz,count,itime1,itime2,itime3
 
 
 real(8),dimension(nx1,ny1,nz1) :: umean1,vmean1,wmean1,phimean1,uumean1,vvmean1,wwmean1,phiphimean1
-real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,dudx1,dudy1,dudz1,dvdx1, &
+real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,wtmean1,dudx1,dudy1,dudz1,dvdx1, &
                                   dvdy1,dvdz1,dwdx1,dwdy1,dwdz1,dudxdudx1,dudydudy1,dudzdudz1, &
                                   dvdxdvdx1,dvdydvdy1,dvdzdvdz1,dwdxdwdx1,dwdydwdy1,dwdzdwdz1,uuvmean1, &
                                   vvvmean1,vwwmean1,pmean1,pvmean1,dphidx1,dphidxdphidx1,dphidy1, &
-                                  dphidydphidy1,dphidz1,dphidzdphidz1,dudxdphidx1,dudydphidy1,dudzdphidz1
+                                  dphidydphidy1,dphidz1,dphidzdphidz1,dudxdphidx1,dudydphidy1,dudzdphidz1, &
+                                  uphiumean1,uphivmean1,uphiwmean1
 real(8),dimension(nx1,ny1,nz1) :: dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz2,dwdz2 
 real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
 real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp,Re_tau_A,Re_tau_O
 real(4) :: xlx=15.70796,zlz=6.283185,Gr=960000
-real(8),dimension(ny1,50) :: q_stat
+real(8),dimension(ny1,56) :: q_stat
 
 
 open (15,file='yp.dat',form='formatted',status='unknown')
@@ -37,7 +38,7 @@ enddo
 close(15)
 print *,'read yp'
 
-itime1=200000
+itime1=100000
 
 
 OPEN(11,FILE='umean.dat',FORM='UNFORMATTED',&
@@ -233,6 +234,20 @@ OPEN(11,FILE='vtmean.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11)
 
+OPEN(11,FILE='wtmean.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) wtmean1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',vtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
 OPEN(11,FILE='uvmean.dat',FORM='UNFORMATTED',&
        ACCESS='DIRECT', RECL=8, STATUS='OLD')
   COUNT = 1
@@ -247,6 +262,19 @@ OPEN(11,FILE='uvmean.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11)
 
+OPEN(11,FILE='uwmean.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) uwmean1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',uvmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
 
 OPEN(11,FILE='dudx.dat',FORM='UNFORMATTED',&
        ACCESS='DIRECT', RECL=8, STATUS='OLD')
@@ -655,6 +683,48 @@ OPEN(11,FILE='dudzdphidz.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11)
 
+OPEN(11,FILE='uphiumean.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) uphiumean1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='uphivmean.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) uphivmean1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='uphiwmean.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) uphiwmean1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
   print *,'READ DATA DONE 1'
 
 do j=1,ny1-1
@@ -680,7 +750,9 @@ phimean1=phimean1/itime1
 phiphimean1=phiphimean1/itime1
 utmean1=utmean1/itime1
 vtmean1=vtmean1/itime1
+wtmean1=wtmean1/itime1
 uvmean1=uvmean1/itime1
+uwmean1=uwmean1/itime1
 dudx1=dudx1/itime1
 dudy1=dudy1/itime1
 dudz1=dudz1/itime1
@@ -710,6 +782,9 @@ dphidzdphidz1=dphidzdphidz1/itime1
 dudxdphidx1=dudxdphidx1/itime1
 dudydphidy1=dudydphidy1/itime1
 dudzdphidz1=dudzdphidz1/itime1
+uphiumean1=uphiumean1/itime1
+uphivmean1=uphivmean1/itime1
+uphiwmean1=uphiwmean1/itime1
 
 !DO AN AVERAGE IN X AND Z
 
@@ -763,6 +838,11 @@ do j=1,ny1
       q_stat(j,47)=q_stat(j,47)+dudxdphidx1(i,j,k)
       q_stat(j,48)=q_stat(j,48)+dudydphidy1(i,j,k)
       q_stat(j,49)=q_stat(j,49)+dudzdphidz1(i,j,k)
+      q_stat(j,51)=q_stat(j,51)+uphiumean1(i,j,k)
+      q_stat(j,52)=q_stat(j,52)+uphivmean1(i,j,k)
+      q_stat(j,53)=q_stat(j,53)+uphiwmean1(i,j,k)
+      q_stat(j,54)=q_stat(j,54)+wtmean1(i,j,k)
+      q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
  
    enddo
    enddo
@@ -797,14 +877,18 @@ alpha=xnu/pr
    x15=x14/(pr*re*u_to) !friction temperature  
    print *,'Theta_tau_Aiding = ',x15
 
+!do j=1,ny1
+!   q_stat(j,56)=-(q_stat(j,51)-2*q_stat(j,1)*q_stat(j,9)-q_stat(j,7)*q_stat(j,4)+ &
+!                 q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9)+ &
+!                 q_stat(j,53)-q_stat(j,1)*q_stat(j,54)-q_stat(j,7)*q_stat(j,55)-q_stat(j,3)*q_stat(j,9))/(u_to*x15*u_to)  !-utui 
+!enddo
+
 do j=1,ny1
-   q_stat(j,13)=-0.5*(q_stat(j,13)-q_stat(j,4)*q_stat(j,2)-2*q_stat(j,11)*q_stat(j,1)+ &
-                      q_stat(j,14)-3*q_stat(j,2)*q_stat(j,5)+ &
-                      q_stat(j,15)-q_stat(j,2)*q_stat(j,6)-2*q_stat(j,3)*q_stat(j,16))/(u_to*u_to*u_to)   !-0.5*ui'ui'v'
+    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !-utv
 enddo
 
 do j=1,ny1-1
-   q_stat(j,13)=(q_stat(j+1,13)-q_stat(j,13))/((yp(j+1)-yp(j))*xl2)             !Turbulent diffusion  
+   q_stat(j,56)=(q_stat(j+1,56)-q_stat(j,56))/((yp(j+1)-yp(j))*xl2)             !Turbulent diffusion  
 enddo
 
 do j=1,ny1
@@ -871,7 +955,7 @@ enddo
 
   open (144,file='Aiding_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,13),q_stat(j,18)
+      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,56),q_stat(j,18)
    enddo
    close(144)
 
@@ -946,6 +1030,11 @@ do j=1,ny1
       q_stat(j,47)=q_stat(j,47)+dudxdphidx1(i,j,k)
       q_stat(j,48)=q_stat(j,48)+dudydphidy1(i,j,k)
       q_stat(j,49)=q_stat(j,49)+dudzdphidz1(i,j,k)
+      q_stat(j,51)=q_stat(j,51)+uphiumean1(i,j,k)
+      q_stat(j,52)=q_stat(j,52)+uphivmean1(i,j,k)
+      q_stat(j,53)=q_stat(j,53)+uphiwmean1(i,j,k)
+      q_stat(j,54)=q_stat(j,54)+wtmean1(i,j,k)
+      q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
 
    enddo
    enddo
@@ -954,14 +1043,18 @@ do j=1,ny1
 enddo
 q_stat(:,:)=q_stat(:,:)/nx1/nz1
 
+!do j=1,ny1
+!   q_stat(j,56)=-(q_stat(j,51)-2*q_stat(j,1)*q_stat(j,9)-q_stat(j,7)*q_stat(j,4)+ &
+!                 q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9)+ &
+!                 q_stat(j,53)-q_stat(j,1)*q_stat(j,54)-q_stat(j,7)*q_stat(j,55)-q_stat(j,3)*q_stat(j,9))/(u_to*x15*u_to)  !-utui 
+!enddo
+
 do j=1,ny1
-   q_stat(j,13)=-0.5*(q_stat(j,13)-q_stat(j,4)*q_stat(j,2)-2*q_stat(j,11)*q_stat(j,1)+ &
-                      q_stat(j,14)-3*q_stat(j,2)*q_stat(j,5)+ &
-                      q_stat(j,15)-q_stat(j,2)*q_stat(j,6)-2*q_stat(j,3)*q_stat(j,16))/(u_to*u_to*u_to)   !-0.5*ui'ui'v'
+    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !-utv
 enddo
 
 do j=1,ny1-1
-   q_stat(j,13)=(q_stat(j+1,13)-q_stat(j,13))/((yp(j+1)-yp(j))*xl2)            !Turbulent diffusion
+   q_stat(j,56)=(q_stat(j+1,56)-q_stat(j,56))/((yp(j+1)-yp(j))*xl2)             !Turbulent diffusion  
 enddo
 
 do j=1,ny1
@@ -1025,7 +1118,7 @@ enddo
    
   open (144,file='Opposing_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=ny1-1,ny1/2+1,-1
-      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,13),q_stat(j,18)
+      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,56),q_stat(j,18)
    enddo
    close(144)
 
