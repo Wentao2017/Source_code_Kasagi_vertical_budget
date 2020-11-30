@@ -20,14 +20,14 @@ real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,wtmean
                                   dvdxdvdx1,dvdydvdy1,dvdzdvdz1,dwdxdwdx1,dwdydwdy1,dwdzdwdz1,uuvmean1, &
                                   vvvmean1,vwwmean1,pmean1,pvmean1,dphidx1,dphidxdphidx1,dphidy1, &
                                   dphidydphidy1,dphidz1,dphidzdphidz1,dudxdphidx1,dudydphidy1,dudzdphidz1, &
-                                  uphiumean1,uphivmean1,uphiwmean1
+                                  uphiumean1,uphivmean1,uphiwmean1,phidpdx1,dpdx1
 real(8),dimension(nx1,ny1,nz1) :: dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz2,dwdz2 
 real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
 real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp,Re_tau_A,Re_tau_O
 real(4) :: xlx=15.70796,zlz=6.283185,Gr=960000
-real(8),dimension(ny1,56) :: q_stat
+real(8),dimension(ny1,59) :: q_stat
 
 
 open (15,file='yp.dat',form='formatted',status='unknown')
@@ -725,6 +725,34 @@ OPEN(11,FILE='uphiwmean.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11)
 
+OPEN(11,FILE='phidpdx.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) phidpdx1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='dpdx.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) dpdx1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11) 
+
   print *,'READ DATA DONE 1'
 
 do j=1,ny1-1
@@ -785,6 +813,8 @@ dudzdphidz1=dudzdphidz1/itime1
 uphiumean1=uphiumean1/itime1
 uphivmean1=uphivmean1/itime1
 uphiwmean1=uphiwmean1/itime1
+phidpdx1=phidpdx1/itime1
+dpdx1=dpdx1/itime1
 
 !DO AN AVERAGE IN X AND Z
 
@@ -843,6 +873,8 @@ do j=1,ny1
       q_stat(j,53)=q_stat(j,53)+uphiwmean1(i,j,k)
       q_stat(j,54)=q_stat(j,54)+wtmean1(i,j,k)
       q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
+      q_stat(j,57)=q_stat(j,57)+phidpdx1(i,j,k)
+      q_stat(j,58)=q_stat(j,58)+dpdx1(i,j,k)
  
    enddo
    enddo
@@ -906,13 +938,8 @@ do j=1,ny1-2
 enddo
 
 do j=1,ny1
-   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
+   q_stat(j,59)=1000*(q_stat(j,57)-q_stat(j,7)*q_stat(j,58))/(u_to*u_to*xl2*x15)   !Temperature pressure-gradient correlation
 enddo
-
-do j=1,ny1-1
-   q_stat(j,18)=-1000*(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
-enddo
-
 
 do j=1,ny1
    print 100,q_stat(j,1),q_stat(j,4),q_stat(j,4)-q_stat(j,1)*q_stat(j,1),q_stat(j,8)-q_stat(j,7)*q_stat(j,7)
@@ -949,7 +976,7 @@ enddo
 
   open (144,file='Aiding_flow_budget_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) yp(j),yp(j)*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,50)
+      write(144,100) yp(j),yp(j)*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,50),q_stat(j,59)
    enddo
    close(144)
 
@@ -1035,6 +1062,8 @@ do j=1,ny1
       q_stat(j,53)=q_stat(j,53)+uphiwmean1(i,j,k)
       q_stat(j,54)=q_stat(j,54)+wtmean1(i,j,k)
       q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
+      q_stat(j,57)=q_stat(j,57)+phidpdx1(i,j,k)
+      q_stat(j,58)=q_stat(j,58)+dpdx1(i,j,k)
 
    enddo
    enddo
@@ -1071,12 +1100,9 @@ do j=1,ny1-2
    q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((ypi(j+1)-ypi(j))*xl2)      !Viscous diffusion 
 enddo
 
-do j=1,ny1
-   q_stat(j,18)=(q_stat(j,19)-q_stat(j,18)*q_stat(j,2))/(u_to*u_to*u_to)   !p'+v'+
-enddo
 
-do j=1,ny1-1
-   q_stat(j,18)=-1000*(q_stat(j+1,18)-q_stat(j,18))/((yp(j+1)-yp(j))*xl2)        !Pressure diffusion  
+do j=1,ny1
+   q_stat(j,59)=1000*(q_stat(j,57)-q_stat(j,7)*q_stat(j,58))/(u_to*u_to*xl2*x15)   !Temperature pressure-gradient correlation
 enddo
 
 do j=1,ny1
@@ -1112,7 +1138,7 @@ enddo
 
   open (144,file='Opposing_flow_budget_ut.dat',form='formatted',status='unknown')
   do j=ny1,ny1/2+1,-1
-      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,50)
+      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,50),q_stat(j,59)
    enddo
    close(144)
    
