@@ -20,14 +20,15 @@ real(8),dimension(nx1,ny1,nz1) :: uvmean1,uwmean1,vwmean1,utmean1,vtmean1,wtmean
                                   dvdxdvdx1,dvdydvdy1,dvdzdvdz1,dwdxdwdx1,dwdydwdy1,dwdzdwdz1,uuvmean1, &
                                   vvvmean1,vwwmean1,pmean1,pvmean1,dphidx1,dphidxdphidx1,dphidy1, &
                                   dphidydphidy1,dphidz1,dphidzdphidz1,dudxdphidx1,dudydphidy1,dudzdphidz1, &
-                                  uphiumean1,uphivmean1,uphiwmean1,phidpdx1,dpdx1
+                                  uphiumean1,uphivmean1,uphiwmean1,phidpdx1,dpdx1,phidudx1,phidudy1,phidudz1,&
+                                  udphidx1,udphidy1,udphidz1
 real(8),dimension(nx1,ny1,nz1) :: dudx2,dvdx2,dwdx2,dudy2,dvdy2,dwdy2,dudz2,dvdz2,dwdz2 
 real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
 real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp,Re_tau_A,Re_tau_O
 real(4) :: xlx=15.70796,zlz=6.283185,Gr=960000
-real(8),dimension(ny1,59) :: q_stat
+real(8),dimension(ny1,66) :: q_stat
 
 
 open (15,file='yp.dat',form='formatted',status='unknown')
@@ -753,6 +754,90 @@ OPEN(11,FILE='dpdx.dat',FORM='UNFORMATTED',&
   ENDDO
   CLOSE(11) 
 
+OPEN(11,FILE='phidudx.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) phidudx1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='phidudy.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) phidudy1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+ 
+OPEN(11,FILE='phidudz.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) phidudz1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='udphidx.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) udphidx1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='udphidy.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) udphidy1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
+OPEN(11,FILE='udphidz.dat',FORM='UNFORMATTED',&
+       ACCESS='DIRECT', RECL=8, STATUS='OLD')
+  COUNT = 1
+  DO K=1,nz1
+     DO J=1,ny1
+        DO I=1,nx1
+           READ(11,REC=COUNT) udphidz1(I,J,K)
+           COUNT = COUNT + 1
+        ENDDO
+     ENDDO
+     !print *,k,'UZUZ',wtmean1(nx1/2,ny1/2,k)!/itime
+  ENDDO
+  CLOSE(11)
+
   print *,'READ DATA DONE 1'
 
 do j=1,ny1-1
@@ -815,6 +900,13 @@ uphivmean1=uphivmean1/itime1
 uphiwmean1=uphiwmean1/itime1
 phidpdx1=phidpdx1/itime1
 dpdx1=dpdx1/itime1
+phidudx1=phidudx1/itime1
+phidudy1=phidudy1/itime1
+phidudz1=phidudz1/itime1
+udphidx1=udphidx1/itime1
+udphidy1=udphidy1/itime1
+udphidz1=udphidz1/itime1
+
 
 !DO AN AVERAGE IN X AND Z
 
@@ -875,6 +967,12 @@ do j=1,ny1
       q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
       q_stat(j,57)=q_stat(j,57)+phidpdx1(i,j,k)
       q_stat(j,58)=q_stat(j,58)+dpdx1(i,j,k)
+      q_stat(j,60)=q_stat(j,60)+phidudx1(i,j,k)
+      q_stat(j,61)=q_stat(j,61)+phidudy1(i,j,k)
+      q_stat(j,62)=q_stat(j,62)+phidudz1(i,j,k)
+      q_stat(j,63)=q_stat(j,63)+udphidx1(i,j,k)
+      q_stat(j,64)=q_stat(j,64)+udphidy1(i,j,k)
+      q_stat(j,65)=q_stat(j,65)+udphidz1(i,j,k)
  
    enddo
    enddo
@@ -885,7 +983,7 @@ q_stat(:,:)=q_stat(:,:)/nx1/nz1
 !   print *,q_stat(:,1)
 
 xnu=1./3370.5!10322.629 !**********no s'e qu'e son estos num creo que la visco
-re=3370.5!10322.629 !Creo qeu es el reynold usado
+re=3370.5!10322.629 !Creo qeu es el reynold usadopost_log_ut_budget.txt
 pr=0.71
 alpha=xnu/pr
 
@@ -916,7 +1014,7 @@ alpha=xnu/pr
 !enddo
 
 do j=1,ny1
-    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !-utv
+    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !utv
 enddo
 
 do j=1,ny1-1
@@ -924,18 +1022,14 @@ do j=1,ny1-1
 enddo
 
 do j=1,ny1
-   q_stat(j,17)=0.5*((q_stat(j,4)-q_stat(j,1)*q_stat(j,1))/(u_to*u_to)+ &
-                    (q_stat(j,5)-q_stat(j,2)*q_stat(j,2))/(u_to*u_to)+ &
-                    (q_stat(j,6)-q_stat(j,3)*q_stat(j,3))/(u_to*u_to))      !K+
+   q_stat(j,66)=-((q_stat(j,60)-q_stat(j,7)*q_stat(j,21)+q_stat(j,61)-q_stat(j,7)*q_stat(j,12)+q_stat(j,62)-q_stat(j,7)*q_stat(j,22))/(x15*u_to*xl2)+ &
+                1/pr*(q_stat(j,63)-q_stat(j,1)*q_stat(j,39)+q_stat(j,64)-q_stat(j,1)*q_stat(j,41)+q_stat(j,65)-q_stat(j,1)*q_stat(j,43))/(u_to*x15*xl2))     !-phidudxi+(1/pr)*udphidxi
 enddo
 
 do j=1,ny1-1
-   q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((yp(j+1)-yp(j))*xl2)
+   q_stat(j,66)=(q_stat(j+1,66)-q_stat(j,66))/((yp(j+1)-yp(j))*xl2)             !Molecular diffusion  
 enddo
 
-do j=1,ny1-2
-   q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((ypi(j+1)-ypi(j))*xl2)      !Viscous diffusion 
-enddo
 
 do j=1,ny1
    q_stat(j,59)=1000*(q_stat(j,57)-q_stat(j,7)*q_stat(j,58))/(u_to*u_to*xl2*x15)   !Temperature pressure-gradient correlation
@@ -982,13 +1076,13 @@ enddo
 
   open (144,file='Aiding_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,56),q_stat(j,18)
+      write(144,100) ypi(j),ypi(j)*xl2,q_stat(j,56),q_stat(j,66)
    enddo
    close(144)
 
   open (144,file='Aiding_flow_budget3_ut.dat',form='formatted',status='unknown')
   do j=1,ny1/2
-      write(144,100) ypii(j),ypii(j)*xl2,q_stat(j,17)
+      write(144,100) ypii(j),ypii(j)*xl2
    enddo
    close(144)
 
@@ -1064,6 +1158,12 @@ do j=1,ny1
       q_stat(j,55)=q_stat(j,55)+uwmean1(i,j,k)
       q_stat(j,57)=q_stat(j,57)+phidpdx1(i,j,k)
       q_stat(j,58)=q_stat(j,58)+dpdx1(i,j,k)
+      q_stat(j,60)=q_stat(j,60)+phidudx1(i,j,k)
+      q_stat(j,61)=q_stat(j,61)+phidudy1(i,j,k)
+      q_stat(j,62)=q_stat(j,62)+phidudz1(i,j,k)
+      q_stat(j,63)=q_stat(j,63)+udphidx1(i,j,k)
+      q_stat(j,64)=q_stat(j,64)+udphidy1(i,j,k)
+      q_stat(j,65)=q_stat(j,65)+udphidz1(i,j,k)
 
    enddo
    enddo
@@ -1079,7 +1179,7 @@ q_stat(:,:)=q_stat(:,:)/nx1/nz1
 !enddo
 
 do j=1,ny1
-    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !-utv
+    q_stat(j,56)=(q_stat(j,52)-q_stat(j,1)*q_stat(j,10)-q_stat(j,7)*q_stat(j,11)-q_stat(j,2)*q_stat(j,9))/(u_to*x15*u_to)    !utv
 enddo
 
 do j=1,ny1-1
@@ -1087,19 +1187,13 @@ do j=1,ny1-1
 enddo
 
 do j=1,ny1
-   q_stat(j,17)=0.5*((q_stat(j,4)-q_stat(j,1)*q_stat(j,1))/(u_to*u_to)+ &
-                    (q_stat(j,5)-q_stat(j,2)*q_stat(j,2))/(u_to*u_to)+ &
-                    (q_stat(j,6)-q_stat(j,3)*q_stat(j,3))/(u_to*u_to))      !K+
+   q_stat(j,66)=-((q_stat(j,60)-q_stat(j,7)*q_stat(j,21)+q_stat(j,61)-q_stat(j,7)*q_stat(j,12)+q_stat(j,62)-q_stat(j,7)*q_stat(j,22))/(x15*u_to*xl2)+ &
+                1/pr*(q_stat(j,63)-q_stat(j,1)*q_stat(j,39)+q_stat(j,64)-q_stat(j,1)*q_stat(j,41)+q_stat(j,65)-q_stat(j,1)*q_stat(j,43))/(u_to*x15*xl2))     !-phidudxi+(1/pr)*udphidxi
 enddo
 
 do j=1,ny1-1
-   q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((yp(j+1)-yp(j))*xl2)
+   q_stat(j,66)=(q_stat(j+1,66)-q_stat(j,66))/((yp(j+1)-yp(j))*xl2)             !Molecular diffusion  
 enddo
-
-do j=1,ny1-2
-   q_stat(j,17)=(q_stat(j+1,17)-q_stat(j,17))/((ypi(j+1)-ypi(j))*xl2)      !Viscous diffusion 
-enddo
-
 
 do j=1,ny1
    q_stat(j,59)=1000*(q_stat(j,57)-q_stat(j,7)*q_stat(j,58))/(u_to*u_to*xl2*x15)   !Temperature pressure-gradient correlation
@@ -1144,13 +1238,13 @@ enddo
    
   open (144,file='Opposing_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=ny1-1,ny1/2+1,-1
-      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,56),q_stat(j,18)
+      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,56),q_stat(j,66)
    enddo
    close(144)
 
   open (144,file='Opposing_flow_budget3_ut.dat',form='formatted',status='unknown')
   do j=ny1-2,ny1/2+1,-1
-      write(144,100) (2.0-ypii(j)),(2.0-ypii(j))*xl2,q_stat(j,17)
+      write(144,100) (2.0-ypii(j)),(2.0-ypii(j))*xl2
    enddo
    close(144)
 
