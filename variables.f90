@@ -55,7 +55,10 @@ real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,uumean,vv
                                                      dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
                                                      dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean,&
                                                      phidpdx,dpdx,phidudx,phidudy,phidudz,udphidx,udphidy,udphidz,&
-                                                     dudxdvdx,dudydvdy,dudzdvdz,udpdy,dpdy,vdpdx,uvvmean,vttmean
+                                                     dudxdvdx,dudydvdy,dudzdvdz,udpdy,dpdy,vdpdx,uvvmean,vttmean,&
+                                                     dvdxdphidx,dvdydphidy,dvdzdphidz,phidpdy,& 
+                                                     vphivmean,vphiwmean,phidvdx,phidvdy,phidvdz,vdphidx,&
+                                                     vdphidy,vdphidz 
 real(mytype), save, allocatable, dimension(:,:,:) :: phimean, phiphimean
 
 !arrays for visualization
@@ -203,6 +206,18 @@ contains
     allocate (vdpdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (uvvmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
     allocate (vttmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dvdxdphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dvdydphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (dvdzdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidpdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (vphivmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (vphiwmean(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidvdx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidvdy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (phidvdz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (vdphidx(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (vdphidy(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
+    allocate (vdphidz(xstS(1):xenS(1),xstS(2):xenS(2),xstS(3):xenS(3)))
 
  
     if (iscalar==1) then

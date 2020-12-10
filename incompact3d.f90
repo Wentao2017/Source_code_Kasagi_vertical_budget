@@ -118,7 +118,11 @@ phidudx=0.;phidudy=0.;phidudz=0.
 udphidx=0.;udphidy=0.;udphidz=0.
 dudxdvdx=0.;dudydvdy=0.;dudzdvdz=0.
 udpdy=0.;dpdy=0.;vdpdx=0.;uvvmean=0.
-vttmean=0.
+vttmean=0.;dvdxdphidx=0.
+dvdydphidy=0.;dvdzdphidz=0.;phidpdy=0.
+vphivmean=0.;vphiwmean=0.;phidvdx=0.
+phidvdy=0.;phidvdz=0.;vdphidx=0.
+vdphidy=0.;vdphidz=0.
 
 t1 = MPI_WTIME()
 
@@ -258,7 +262,8 @@ do itime=ifirst,ilast
                    phG,ph2,ph3,pp3,dphidx,dphidxdphidx,dphidy,dphidydphidy,dphidz,dphidzdphidz,&
                    dudxdphidx,dudydphidy,dudzdphidz,uphiumean,uphivmean,uphiwmean,phidpdx,dpdx,&
                    phidudx,phidudy,phidudz,udphidx,udphidy,udphidz,dudxdvdx,dudydvdy,dudzdvdz,&
-                   udpdy,dpdy,vdpdx,uvvmean,vttmean)                  !Budget
+                   udpdy,dpdy,vdpdx,uvvmean,vttmean,dvdxdphidx,dvdydphidy,dvdzdphidz,phidpdy,&
+                   vphivmean,vphiwmean,phidvdx,phidvdy,phidvdz,vdphidx,vdphidy,vdphidz)                  !Budget
 
    endif
 
