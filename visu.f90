@@ -570,9 +570,9 @@ if (iscalar==1) then
    call transpose_x_to_y(uy1,ta2)                                                       !Budget
    call transpose_x_to_y(phi1,tb2)
    call dery (tc2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)           !Budget 
-   call dery(td2,tb2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+   call dery(tf2,tb2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
    call transpose_y_to_x(tc2,ta1)                                                       !Budget
-   call transpose_y_to_x(td2,tb1)
+   call transpose_y_to_x(tf2,tb1)
    te1(:,:,:)=ta1(:,:,:)*tb1(:,:,:)
    call fine_to_coarseS(1,te1,tmean)
    dvdydphidy(:,:,:)=dvdydphidy(:,:,:)+tmean(:,:,:)
@@ -582,10 +582,10 @@ if (iscalar==1) then
    call transpose_x_to_y(phi1,tb2)
    call transpose_y_to_z(ta2,ta3)
    call transpose_y_to_z(tb2,tb3)
-   call derz (tc3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)               !Budget 
-   call derz(td3,tb3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
-   call transpose_z_to_y(tc3,ta2)                                                       !Budget
-   call transpose_z_to_y(td3,tb2)                                                       !Budget
+   call derz (td3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)               !Budget 
+   call derz(te3,tb3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
+   call transpose_z_to_y(td3,ta2)                                                       !Budget
+   call transpose_z_to_y(te3,tb2)                                                       !Budget
    call transpose_y_to_x(ta2,ta1)
    call transpose_y_to_x(tb2,tb1)
    te1(:,:,:)=ta1(:,:,:)*tb1(:,:,:)                            !Budget
