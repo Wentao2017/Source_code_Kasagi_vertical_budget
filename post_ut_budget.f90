@@ -7,7 +7,7 @@ program post
 implicit none
 
 integer,parameter :: nzb=1
-integer,parameter :: nx1=256,ny1=257,nz1=256
+integer,parameter :: nx1=512,ny1=257,nz1=512
 character(len=3) suffix,suffix1
 character(len=20) nfichier,nfichier1,nchamp
 integer :: num,i,j,k,nb_fich,nb_proc_total,nb_proc,longueur,long,itime
@@ -27,7 +27,7 @@ real(4),dimension(ny1) :: yp,ypi,ypii
 real(8),dimension(nx1,ny1,nz1) :: umean2,vmean2,wmean2,uumean2,vvmean2,wwmean2
 !real(8),dimension(nx1,ny1,nz1) :: uvmean2,uwmean2,vwmean2
 real(4) :: u_to,u_to1,u_to2,re,xl2,xl3,xnu,x14,x15,pr,alpha,dxp,dzp,Re_tau_A,Re_tau_O
-real(4) :: xlx=15.70796,zlz=6.283185,Gr=960000
+real(4) :: xlx=31.41593,zlz=12.56637,Gr=21344400
 real(8),dimension(ny1,66) :: q_stat
 
 
@@ -982,9 +982,9 @@ enddo
 q_stat(:,:)=q_stat(:,:)/nx1/nz1
 !   print *,q_stat(:,1)
 
-xnu=1./3370.5!10322.629 !**********no s'e qu'e son estos num creo que la visco
-re=3370.5!10322.629 !Creo qeu es el reynold usadopost_log_ut_budget.txt
-pr=0.71
+xnu=1./3500!10322.629 !**********no s'e qu'e son estos num creo que la visco
+re=3500!10322.629 !Creo qeu es el reynold usadopost_log_ut_budget.txt
+pr=0.025
 alpha=xnu/pr
 
 !!!!!!!!!!!!
@@ -995,7 +995,13 @@ alpha=xnu/pr
    xl2=sqrt(xl3)/xnu
    print *,'Re_tau_Aiding = ',xl2
    Re_tau_A=xl2
-   Re_tau_O=sqrt(xnu*(q_stat(ny1-1,1)-q_stat(ny1,1))/(yp(ny1)-yp(ny1-1)))/xnu
+
+   if ((q_stat(ny1-1,1)-q_stat(ny1,1))>0) then
+       Re_tau_O=sqrt(xnu*(q_stat(ny1-1,1)-q_stat(ny1,1))/(yp(ny1)-yp(ny1-1)))/xnu
+   else
+       Re_tau_O=-sqrt(-xnu*(q_stat(ny1-1,1)-q_stat(ny1,1))/(yp(ny1)-yp(ny1-1)))/xnu
+   endif
+
    Re_tau_A=(Re_tau_A+Re_tau_O)/2.0  
    u_to1=xl2
    u_to=u_to1/re
@@ -1091,8 +1097,13 @@ enddo
 !!!!!!!!!!!!!!
 
    xl3=xnu*(q_stat(ny1-1,1)-q_stat(ny1,1))/(yp(ny1)-yp(ny1-1))
-   xl2=sqrt(xl3)/xnu
-   print *,'Re_tau_Opposing = ',xl2
+   if (xl3>0) then
+           xl2=sqrt(xl3)/xnu
+           print *,'Re_tau_Opposing = ',xl2
+   else
+           xl2=-sqrt(-xl3)/xnu
+           print *,'Re_tau_Opposing = ',xl2
+   endif
    u_to1=xl2
    u_to=u_to1/re
 
@@ -1221,7 +1232,7 @@ enddo
 
   open (144,file='Opposing_flow_cf_Nu.dat',form='formatted',status='unknown')
   do j=ny1,1,-1
-      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,((q_stat(j,1)/u_to)+(q_stat(j,1)/u_to))/2.,&
+      write(144,100) (2.0-yp(j)),(2.0-yp(j))*ABS(xl2),((q_stat(j,1)/u_to)+(q_stat(j,1)/u_to))/2.,&
            (q_stat(j,4)+q_stat(j,4))/2.,(q_stat(j,5)+q_stat(j,5))/2.,&
            (q_stat(j,6)+q_stat(j,6))/2.,((q_stat(j,7)/x15)+(q_stat(j,7)/x15))/2.,&
            (q_stat(j,8)+q_stat(j,8))/2.,(q_stat(j,9)+q_stat(j,9))/2.,(q_stat(j,10)+q_stat(j,10))/2.,&
@@ -1232,19 +1243,19 @@ enddo
 
   open (144,file='Opposing_flow_budget_ut.dat',form='formatted',status='unknown')
   do j=ny1,ny1/2+1,-1
-      write(144,100) (2.0-yp(j)),(2.0-yp(j))*xl2,q_stat(j,38),q_stat(j,20),q_stat(j,50),q_stat(j,59)
+      write(144,100) (2.0-yp(j)),(2.0-yp(j))*ABS(xl2),q_stat(j,38),q_stat(j,20),q_stat(j,50),q_stat(j,59)
    enddo
    close(144)
    
   open (144,file='Opposing_flow_budget2_ut.dat',form='formatted',status='unknown')
   do j=ny1-1,ny1/2+1,-1
-      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*xl2,q_stat(j,56),q_stat(j,66)
+      write(144,100) (2.0-ypi(j)),(2.0-ypi(j))*ABS(xl2),q_stat(j,56),q_stat(j,66)
    enddo
    close(144)
 
   open (144,file='Opposing_flow_budget3_ut.dat',form='formatted',status='unknown')
   do j=ny1-2,ny1/2+1,-1
-      write(144,100) (2.0-ypii(j)),(2.0-ypii(j))*xl2
+      write(144,100) (2.0-ypii(j)),(2.0-ypii(j))*ABS(xl2)
    enddo
    close(144)
 
